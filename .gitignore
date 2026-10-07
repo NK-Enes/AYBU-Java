@@ -1,0 +1,83 @@
+# ==========================================
+# 1. Derleme ve Çıktı Dosyaları (Build & Output)
+# ==========================================
+bin/
+out/
+build/
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# ==========================================
+# 2. IDE ve Editör Ayarları
+# ==========================================
+
+# --- IntelliJ IDEA ---
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.kotlin
+
+# --- Eclipse ---
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# --- NetBeans ---
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# --- VS Code ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# ==========================================
+# 3. İşletim Sistemi ve Sistem Dosyaları
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# ==========================================
+# 4. Loglar ve Geçici Veriler
+# ==========================================
+*.log
+*.tmp
+*.bak
+*.swp
+.hs_err_pid*
+replay_pid*
+
+# ==========================================
+# 5. Hassas Bilgiler ve Çevre Değişkenleri
+# ==========================================
+.env
+.env.local
+*.pem
+*.key
