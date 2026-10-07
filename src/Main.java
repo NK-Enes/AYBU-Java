@@ -20,17 +20,17 @@ public class Main {
         int random_number = random.nextInt(0,100);
         System.out.println(random_number);
 
-        System.out.print("Sikiniz Kac cm: ");
-        double penis_size = scanner.nextDouble();
+        System.out.print("Boyunuz Kac cm: ");
+        double lenght = scanner.nextDouble();
         scanner.nextLine(); // if this not here the 2. next line take just "\n"
-        if (penis_size >= 19){
-            System.out.println("You have huge YARAK be proud");
+        if (lenght >= 190){
+            System.out.println("Baya Uzun Boylusun");
         }
-        else if (penis_size >= 10){
-            System.out.println("You have medium YARAK");
+        else if (lenght >= 165){
+            System.out.println("Genel Kitleye Uymussun");
         }
         else {
-            System.out.print("\nPUHAHAHAHA just " + penis_size + " cm really?");
+            System.out.print("\nPUHAHAHAHA sadece " + lenght + " cm really?");
         }
 
         scanner.close();
