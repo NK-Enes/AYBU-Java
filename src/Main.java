@@ -21,16 +21,16 @@ public class Main {
         System.out.println(random_number);
 
         System.out.print("Boyunuz Kac cm: ");
-        double lenght = scanner.nextDouble();
+        double length = scanner.nextDouble();
         scanner.nextLine(); // if this not here the 2. next line take just "\n"
-        if (lenght >= 190){
+        if (length >= 190){
             System.out.println("Baya Uzun Boylusun");
         }
-        else if (lenght >= 165){
+        else if (length >= 165){
             System.out.println("Genel Kitleye Uymussun");
         }
         else {
-            System.out.print("\nPUHAHAHAHA sadece " + lenght + " cm really?");
+            System.out.print("\nPUHAHAHAHA sadece " + length + " cm really?");
         }
 
         scanner.close();
