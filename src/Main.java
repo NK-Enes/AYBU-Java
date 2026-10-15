@@ -17,7 +17,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
 
-        int random_number = random.nextInt(0,100);
+        double random_number = random.nextDouble(0,100);
         System.out.println(random_number);
 
         System.out.print("Boyunuz Kac cm: ");
@@ -34,6 +34,12 @@ public class Main {
         }
 
         scanner.close();
+
+        System.out.println(Math.PI);
+        System.out.println(Math.E);
+        System.out.println(Math.pow(10,-1));
+        System.out.println(Math.abs(-150));
+        System.out.println(Math.sqrt(27));
 
     }
 }
