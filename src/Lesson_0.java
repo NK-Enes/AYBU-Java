@@ -1,6 +1,7 @@
 /*
 1- Section: hypotenuse
 2- Section: circle values
+3- Section: printf's
  */
 
 
@@ -24,6 +25,7 @@ public class Lesson_0 {
         */
 
         //Section 2
+        /*
         double radius = input.nextDouble();
 
         System.out.print("Circle Area: ");
@@ -32,6 +34,22 @@ public class Lesson_0 {
         System.out.println(2 * Math.PI * radius);
         System.out.print("If this is a sphere: ");
         System.out.println(4.0 / 3.0 * Math.PI * Math.pow(radius,3));
+         */
+
+        //Section 3
+        String name = "Enes";
+        char grade = 'A';
+        double height = 1.78;
+        int age = 20;
+        boolean is_student = true;
+        double neglet = -50.24;
+        double neglit = 50.25;
+        long neglot = 40000000;
+
+        System.out.printf("Hello %s (Age: %d Grade: %c)\nHeight: %.2f m\nStudent: %b\n",name,age,grade,height,is_student);
+        System.out.printf("Complex Double: %.2f\n",neglet);
+        System.out.printf("Complex Double: %+.2f\n",neglit);
+        System.out.printf("Long Number: %,d",neglot);
 
     }
 }
