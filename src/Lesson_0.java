@@ -9,7 +9,7 @@
 import java.util.Scanner;
 
 public class Lesson_0 {
-    static void main() {
+    static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
         // Section 1
@@ -37,6 +37,7 @@ public class Lesson_0 {
          */
 
         //Section 3
+        /*
         String name = "Enes";
         char grade = 'A';
         double height = 1.78;
@@ -50,6 +51,17 @@ public class Lesson_0 {
         System.out.printf("Complex Double: %.2f\n",neglet);
         System.out.printf("Complex Double: %+.2f\n",neglit);
         System.out.printf("Long Number: %,d",neglot);
+         */
+
+        //Section 4
+        double principal = input.nextDouble();
+        double rate = input.nextDouble() / 100;
+        int times_comp = input.nextInt();
+        int years = input.nextInt();
+        double amount;
+
+        amount = principal * Math.pow(1 + rate / times_comp,times_comp * years);
+        System.out.println(amount);
 
     }
 }
