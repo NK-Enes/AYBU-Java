@@ -63,7 +63,7 @@ public class Mini_RPG {
                         return new double[]{1, current_hp, current_atk, current_def};
                     }
                 } else{
-                    System.out.print("FAILED| You Missed Your Attack");
+                    System.out.print("FAILED| You Missed Your Attack\n");
                 }
 
                 hit = random.nextDouble(0,100);
@@ -79,7 +79,20 @@ public class Mini_RPG {
                     System.out.print("SUCCESSFUL| You dodged Monster's Attack\n");
                 }
             } else if (chose == 2) {
-
+                System.out.print("SUCCESSFUL| You Gain 50 Defence Temp\nSUCCESSFUL| You Gain 10 Defence Perm\n");
+                current_def = Math.min(player_max[2],current_def+10);
+                double hit = random.nextDouble(0,100);
+                if (hit >= current_def + 40){
+                    double multipler = random.nextDouble(0.5,1.5); //Crit or Miss
+                    System.out.printf("FAILED| You take hit from Monster Deal %.2f Damage (%.2f Multipler)\n",multipler*monster_atk,multipler);
+                    current_hp -= multipler * current_atk;
+                    if (current_hp <= 0){
+                        System.out.print("You Slain by Monster\n");
+                        return new double[]{0, current_hp, current_atk, current_def};
+                    }
+                } else{
+                    System.out.print("SUCCESSFUL| You dodged Monster's Attack\n");
+                }
             } else if (chose == 3) {
                 System.out.print("DUMB BITCH IT'S STILL NOT INCLUDE\n");
             } else if (chose == 4) {
