@@ -1,6 +1,4 @@
-package Lessons;/*
-Section 1- Switch Case Statement
- */
+package Lessons;
 
 import java.util.Scanner;
 
