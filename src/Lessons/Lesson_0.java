@@ -1,4 +1,4 @@
-/*
+package Lessons;/*
 1- Section: hypotenuse
 2- Section: circle values
 3- Section: printf's
@@ -7,8 +7,6 @@
 
 
 
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class Lesson_0 {
@@ -82,7 +80,7 @@ public class Lesson_0 {
         System.out.printf("NonCaseSens String Check: %b\n","Password".equalsIgnoreCase("word"));
          */
 
-        
+
 
     }
 }
