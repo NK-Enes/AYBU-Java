@@ -13,14 +13,14 @@ import java.util.Random;
 public abstract class Character {
     Random random = new Random();
 
-    String name,ID;
-    double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
-    double current_hp,current_def,current_atk;
-    Position position = Position.NONE;
-    double hit_change,dodge_change,guard_change;
+    protected String name,ID;
+    protected double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
+    protected double current_hp,current_def,current_atk;
+    protected Position position = Position.NONE;
+    protected double hit_change,dodge_change,guard_change;
 
-    double damage_dealt,damage_sustained;
-    int dodge_count,guard_count;
+    protected double damage_dealt,damage_sustained;
+    protected int dodge_count,guard_count;
 
     public Character(String name,String ID,double[] MAXs,double[] currents,Position position,double[] changes){
         this.name = name;
@@ -66,18 +66,18 @@ public abstract class Character {
     }
 
     protected void health_change (double amount){
-        this.current_hp += amount;
+        this.current_hp = Math.clamp(this.current_hp + amount,0, MAX_HP);
         if (amount < 0){
             this.damage_sustained -= amount; // We calculate total damage take this turn
         }
     }
 
     protected void defence_change (double amount){
-        this.current_def += amount;
+        this.current_def = Math.clamp(this.current_def + amount, 0, MAX_DEF);
     }
 
     protected void attack_change (double amount){
-        this.current_atk += amount;
+        this.current_atk = Math.clamp(this.current_atk + amount, 0, MAX_ATK);
     }
 
     public boolean is_alive (){
