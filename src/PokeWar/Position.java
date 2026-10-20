@@ -8,9 +8,9 @@ public enum Position {
     FLY("FLY",0,4),
     UNDER("UNDER", 0,5);
 
-    final int capacity;
-    final int numeric;
-    final String str;
+    public final int capacity;
+    public final int numeric;
+    public final String str;
 
     Position(String str,int capacity,int numeric){
         this.str = str;
