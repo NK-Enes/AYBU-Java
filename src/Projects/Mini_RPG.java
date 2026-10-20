@@ -19,12 +19,79 @@ public class Mini_RPG {
         return new double[] { monster_hp, monster_atc, monster_def };
     }
 
-    static double[] Player_vs_Monster (String name,double[] player,double[] player_max,double[] monster,double[] monster_max,boolean[] status){
+    static double Regen_FromLeft (double health, double MAX_HP){
+        health += Math.min((MAX_HP - health) * 0.5,MAX_HP);
+        return health;
+    }
+
+    static double[] Multi_Shot (double attack, int combo){
+        Random random = new Random();
+        double shot = 1;
+        double damage = 0;
+        double multipler;
+        while (shot > 0.8){
+            shot = random.nextDouble(0,1);
+            combo ++;
+            multipler = random.nextDouble(0.5,1.5) + (combo * 0.1); //Crit or Miss
+            System.out.printf("SUCCESSFUL| You Slash Enemy Deal %.2f Damage (%.2f Multipler %d Combo)\n",multipler*attack,multipler,combo);
+            damage += multipler * attack;
+        }
+        System.out.printf("TOTAL| You dealt %.2f damage\n",damage);
+        return new double[] {damage,combo};
+    }
+
+    static double[] Lifesteal (double attack,double health){
+        Random random = new Random();
+        double multipler = random.nextDouble(0.5,1.5);
+        double damage = multipler * attack;
+        health += damage;
+        System.out.printf("SUCCESSFUL| Your Soul Bellong Me (Gain %.2f Health Dealt %.2f Damage)\n",damage,damage);
+        return new double[] {health,damage};
+    }
+
+    static double Justice (){
+        System.out.print("SUCCESSFUL| GOD DECIDE DIE !!!\n");
+        return 0; // enemy health
+    }
+
+    static double Gather (double health,double MAX_HP){
+        Random random = new Random();
+        boolean harvest = true;
+        while (harvest && MAX_HP != health){
+            health = Math.min(MAX_HP,health + MAX_HP * 0.1);
+            System.out.printf("SUCCESSFUL| Bounty Harvest: Health + %.2f\n",MAX_HP*0.1);
+            harvest = random.nextBoolean();
+        }
+        return health;
+    }
+
+    static String Ability (String character_class){
+        return switch (character_class){
+            case "Warrior" -> "Regen (30% of your missing health)";
+            case "Archer" -> "Multi Shot (Shot X time %20)";
+            case "Mage" -> "Lifesteal (Deal Damage than heal that much";
+            case "God" -> "Justice (Instant Win)";
+            case "Farmer" -> "Bounty Gather (Gather Fruits than heal)";
+            default -> "NO ABILITY FOR NOW";
+        };
+    }
+
+    static double[] Player_vs_Monster (String name,String character_class,double[] player,double[] player_max,double[] monster,double[] monster_max,boolean[] status){
 
         Scanner input = new Scanner(System.in);
         Random random = new Random();
 
         int attack_counter = 0;
+        int max_ability_count = switch (character_class){
+            case "Warrior" -> 3; // Regen %50 of MAX-CURRENT
+            case "Archer" -> 5; // Multi Attack
+            case "Mage" -> 2;
+            case "God" -> 999;
+            case "Farmer" -> 10;
+            default -> 0;
+        };
+        int ability_count = max_ability_count;
+
 
         double current_hp = player[0];
         double current_atk = player[1];
@@ -64,7 +131,7 @@ public class Mini_RPG {
                 System.out.print("1- Basic Attack\n");
                 System.out.print("2- Basic Defence\n");
                 System.out.print("3- Shield Break\n");
-                System.out.print("4- Class Ability (0/X)\n"); // Future Purposes
+                System.out.printf("4- Ability: %s (%d/%d)\n",Ability(character_class),ability_count,max_ability_count);
                 System.out.print("5- Flee\n");
                 System.out.print("===================================\n");
                 int chose = input.nextInt();
@@ -170,7 +237,70 @@ public class Mini_RPG {
                         status[1] = false;
                     }
                 } else if (chose == 4) {
-                    System.out.print("DUMB BITCH IT'S STILL NOT INCLUDE\n");
+                    if (ability_count > 0){
+                        ability_count --;
+                        double [] values;
+                        switch (character_class){
+                            case "Warrior":
+                                current_hp = Regen_FromLeft(current_hp,MAX_HP);
+                                break;
+                            case "Archer":
+                                values = Multi_Shot(current_atk,attack_counter);
+                                double damage = values[0];
+                                attack_counter = (int) values[1];
+                                monster_hp -= damage;
+                                if (monster_hp <= 0){
+                                    boolean atk_def = random.nextBoolean();
+                                    System.out.print("You Slain The Monster\n");
+                                    if (atk_def) {
+                                        double reward = random.nextDouble(MAX_ATK * 0.1, MAX_ATK * 0.2);
+                                        System.out.printf("You Gain +%.2f Attack\n", reward);
+                                        return new double[]{1, current_hp, current_atk + reward, current_def, 0};
+                                    } else {
+                                        double reward = random.nextDouble(MAX_DEFENCE * 0.1, MAX_DEFENCE * 0.2);
+                                        System.out.printf("You Gain +%.2f Defence\n", reward);
+                                        return new double[]{1, current_hp, current_atk, current_def, reward};
+                                    }
+                                }
+                                break;
+                            case "Mage":
+                                values = Lifesteal(current_atk, current_hp);
+                                current_hp = values[0];
+                                monster_hp -= values[1];
+                                if (monster_hp <= 0){
+                                    boolean atk_def = random.nextBoolean();
+                                    System.out.print("You Slain The Monster\n");
+                                    if (atk_def) {
+                                        double reward = random.nextDouble(MAX_ATK * 0.1, MAX_ATK * 0.2);
+                                        System.out.printf("You Gain +%.2f Attack\n", reward);
+                                        return new double[]{1, current_hp, current_atk + reward, current_def, 0};
+                                    } else {
+                                        double reward = random.nextDouble(MAX_DEFENCE * 0.1, MAX_DEFENCE * 0.2);
+                                        System.out.printf("You Gain +%.2f Defence\n", reward);
+                                        return new double[]{1, current_hp, current_atk, current_def, reward};
+                                    }
+                                }
+                                break;
+                            case "God":
+                                boolean atk_def = random.nextBoolean();
+                                System.out.print("You Deliver JUSTICE to The Monster\n");
+                                if (atk_def) {
+                                    double reward = random.nextDouble(MAX_ATK * 0.1, MAX_ATK * 0.2);
+                                    System.out.printf("You Gain +%.2f Attack\n", reward);
+                                    return new double[]{1, current_hp, current_atk + reward, current_def, 0};
+                                } else {
+                                    double reward = random.nextDouble(MAX_DEFENCE * 0.1, MAX_DEFENCE * 0.2);
+                                    System.out.printf("You Gain +%.2f Defence\n", reward);
+                                    return new double[]{1, current_hp, current_atk, current_def, reward};
+                                }
+                            case "Farmer":
+                                current_hp = Gather(current_hp,MAX_HP);
+                                break;
+                        }
+                    } else {
+                        System.out.print("You Out off Ability\n");
+                    }
+
                 } else if (chose == 5) {
                     double run_value = random.nextDouble(0,300);
                     if (run_value >= 160 || status[1]) { // 160 Const
@@ -326,20 +456,20 @@ public class Mini_RPG {
             if (chose == 0){
                 break; // Leave While
             } else if (chose == 1) {
-                result = Player_vs_Monster(name,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
+                result = Player_vs_Monster(name,character_class,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
                         new double[] {monster_hp, monster_atc,monster_def},monster,new boolean[] {player_stunned,monster_stunned});
             } else if (chose == 2) {
                 double run_value = random.nextDouble(0,300);
                 if (run_value >= difficulty){
                     System.out.print("Successful| You stunned Monster\n");
                     monster_stunned = true;
-                    result = Player_vs_Monster(name,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
+                    result = Player_vs_Monster(name,character_class,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
                             new double[] {monster_hp, monster_atc,monster_def},monster,new boolean[] {player_stunned,monster_stunned});
                 }
                 else{
                     System.out.print("Failed| You're stunned by Monster\n");
                     player_stunned = true;
-                    result = Player_vs_Monster(name,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
+                    result = Player_vs_Monster(name,character_class,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
                             new double[] {monster_hp, monster_atc,monster_def},monster,new boolean[] {player_stunned,monster_stunned});
                 }
             } else if (chose == 3) {
@@ -350,7 +480,7 @@ public class Mini_RPG {
                     result = new double[] {0,current_hp,current_atk,current_def,0};
                 }
                 else{
-                    result = Player_vs_Monster(name,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
+                    result = Player_vs_Monster(name,character_class,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
                             new double[] {monster_hp, monster_atc,monster_def},monster,new boolean[] {player_stunned,monster_stunned});
                 }
             } else{
@@ -362,7 +492,7 @@ public class Mini_RPG {
                     result = new double[] {0,current_hp,current_atk,current_def,0};
                 }
                 else{
-                    result = Player_vs_Monster(name,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
+                    result = Player_vs_Monster(name,character_class,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
                             new double[] {monster_hp, monster_atc,monster_def},monster,new boolean[] {player_stunned,monster_stunned});
                 }
             }
