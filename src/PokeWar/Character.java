@@ -14,6 +14,7 @@ public abstract class Character {
     Random random = new Random();
 
     protected String name,ID;
+    protected double[] rechange;
     protected double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
     protected double current_hp,current_def,current_atk;
     protected Position position = Position.NONE;
@@ -26,6 +27,7 @@ public abstract class Character {
         this.name = name;
         this.ID = ID;
         this.position = position;
+        this.rechange = new double[] {0, 0, 0, 0}; //Position, hp, def, atk
 
         this.hit_change = changes[0];
         this.dodge_change = changes[1];
@@ -80,6 +82,16 @@ public abstract class Character {
         this.current_atk = Math.clamp(this.current_atk + amount, 0, MAX_ATK);
     }
 
+    public void buff (double[] changes){
+        this.health_change(changes[0]);
+        this.defence_change(changes[1]);
+        this.attack_change(changes[2]);
+    }
+
+    public void rechange_change (int index,double value){
+        this.rechange[index] = value;
+    }
+
     public boolean is_alive (){
         return this.current_hp > 0;
     }
@@ -93,7 +105,7 @@ public abstract class Character {
         }
     }
 
-    public abstract void useAbility(Character target, Character[] allies, Character[] enemies);
+    public abstract void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies);
 
     public void guard (double expected_damage) { //todo Add Damage Type
         double dodge_happen = random.nextDouble();
