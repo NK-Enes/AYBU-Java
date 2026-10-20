@@ -63,8 +63,9 @@ public class Mini_RPG {
                 System.out.print("What Action you take\n");
                 System.out.print("1- Basic Attack\n");
                 System.out.print("2- Basic Defence\n");
-                System.out.print("3- Class Ability (0/X)\n"); // Future Purposes
-                System.out.print("4- Flee\n");
+                System.out.print("3- Shield Break\n");
+                System.out.print("4- Class Ability (0/X)\n"); // Future Purposes
+                System.out.print("5- Flee\n");
                 System.out.print("===================================\n");
                 int chose = input.nextInt();
 
@@ -139,8 +140,38 @@ public class Mini_RPG {
                         status[1] = false;
                     }
                 } else if (chose == 3) {
-                    System.out.print("DUMB BITCH IT'S STILL NOT INCLUDE\n");
+                    double break_percent = random.nextDouble(5,100);
+                    System.out.printf("SUCCESSFUL| You Break %c%.2f (-%.2f) of Monster defence\n",'%',break_percent,break_percent*monster_def / 100);
+                    monster_def -= break_percent*monster_def / 100;
+                    if (!status[1]){
+                        double hit = random.nextDouble(0,100);
+                        if (hit >= current_def + 40){
+                            double multipler = random.nextDouble(0.5,1.2); //Crit or Miss
+                            System.out.printf("FAILED| You take hit from Monster Deal %.2f Damage (%.2f Multipler)\n",multipler*monster_atk,multipler);
+                            current_hp -= multipler * monster_atk;
+                            if (current_hp <= 0){
+                                boolean atk_def = random.nextBoolean();
+                                System.out.print("You Slain The Monster\n");
+                                if (atk_def){
+                                    double reward = random.nextDouble(MAX_ATK*0.1,MAX_ATK*0.2);
+                                    System.out.printf("You Gain +%.2f Attack\n",reward);
+                                    return new double[]{1, current_hp, current_atk+reward, current_def,0};
+                                } else{
+                                    double reward = random.nextDouble(MAX_DEFENCE*0.1,MAX_DEFENCE*0.2);
+                                    System.out.printf("You Gain +%.2f Defence\n",reward);
+                                    return new double[]{1, current_hp, current_atk, current_def,reward};
+                                }
+                            }
+                        } else{
+                            System.out.print("SUCCESSFUL| You dodged Monster's Attack\n");
+                        }
+                    } else {
+                        System.out.print("STUNNED| Monster is stunned\n");
+                        status[1] = false;
+                    }
                 } else if (chose == 4) {
+                    System.out.print("DUMB BITCH IT'S STILL NOT INCLUDE\n");
+                } else if (chose == 5) {
                     double run_value = random.nextDouble(0,300);
                     if (run_value >= 160 || status[1]) { // 160 Const
                         System.out.print("Successful| You Run Away From Monster\n");
