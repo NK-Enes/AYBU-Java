@@ -4,8 +4,9 @@ public enum Position {
     NONE("NONE",100,0),
     FRONT("FRONT",2,1),
     BACK("BACK",1,2),
-    FLY("FLY",0,3),
-    UNDER("UNDER", 0,4);
+    TAUNTER("TAUNTER",3,3),
+    FLY("FLY",0,4),
+    UNDER("UNDER", 0,5);
 
     final int capacity;
     final int numeric;
