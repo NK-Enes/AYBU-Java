@@ -20,23 +20,21 @@ public enum Position {
 
     boolean is_valid (Position target_position,int[] filled_positions){
         boolean valid;
-        if (this == Position.FRONT){
-            if (target_position == Position.FRONT){
+        if (this == Position.TAUNTER || this == Position.FRONT){
+            if (target_position == Position.TAUNTER || target_position == Position.FRONT){
                 valid = true;
-            } else if (target_position == Position.BACK) {
-                valid = filled_positions[Position.FRONT.numeric] == 0; // No Front Enemy
+            } else if (target_position == Position.BACK && filled_positions[Position.FRONT.numeric] == 0 && filled_positions[Position.TAUNTER.numeric] == 0) {
+                valid = true;
             } else {
-                valid = false; // For Now Those places safe
+                valid = false;
             }
-
         } else if (this == Position.BACK) {
-            if (target_position == Position.FRONT || target_position == Position.BACK){
+            if (target_position == Position.FRONT || target_position == Position.BACK || target_position == Position.TAUNTER){
                 valid = true;
             } else {
                 valid = false; // For Now Those places safe
             }
-
-        } else { // Add Other Positions
+        } else{
             valid = false;
         }
 
