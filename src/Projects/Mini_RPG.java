@@ -24,6 +24,8 @@ public class Mini_RPG {
         Scanner input = new Scanner(System.in);
         Random random = new Random();
 
+        int attack_counter = 0;
+
         double current_hp = player[0];
         double current_atk = player[1];
         double current_def = player[2];
@@ -69,8 +71,10 @@ public class Mini_RPG {
                 if (chose == 1){
                     double hit = random.nextDouble(0,100);
                     if (hit >= monster_def){
-                        double multipler = random.nextDouble(0.5,1.5); //Crit or Miss
-                        System.out.printf("SUCCESSFUL| You Slash Enemy Deal %.2f Damage (%.2f Multipler)\n",multipler*current_atk,multipler);
+                        attack_counter ++;
+                        double multipler = random.nextDouble(0.5,1.5) + (attack_counter * 0.1); //Crit or Miss
+                        System.out.printf("SUCCESSFUL| You Slash Enemy Deal %.2f Damage (%.2f Multipler %d Combo)\n",
+                                multipler*current_atk+(attack_counter * 0.1),multipler,attack_counter);
                         monster_hp -= multipler * current_atk;
                         if (monster_hp <= 0){
                             boolean atk_def = random.nextBoolean();
@@ -92,7 +96,7 @@ public class Mini_RPG {
                     if (!status[1]){
                         hit = random.nextDouble(0,100);
                         if (hit >= current_def){
-                            double multipler = random.nextDouble(0.5,1.5); //Crit or Miss
+                            double multipler = random.nextDouble(0.5,1.2); //Crit or Miss
                             System.out.printf("FAILED| You take hit from Monster Deal %.2f Damage (%.2f Multipler)\n",multipler*monster_atk,multipler);
                             current_hp -= multipler * monster_atk;
                             if (current_hp <= 0){
@@ -111,7 +115,7 @@ public class Mini_RPG {
                     if (!status[1]){
                         double hit = random.nextDouble(0,100);
                         if (hit >= current_def + 40){
-                            double multipler = random.nextDouble(0.5,1.5); //Crit or Miss
+                            double multipler = random.nextDouble(0.5,1.2); //Crit or Miss
                             System.out.printf("FAILED| You take hit from Monster Deal %.2f Damage (%.2f Multipler)\n",multipler*monster_atk,multipler);
                             current_hp -= multipler * monster_atk;
                             if (current_hp <= 0){
@@ -124,7 +128,7 @@ public class Mini_RPG {
                                 } else{
                                     double reward = random.nextDouble(MAX_DEFENCE*0.1,MAX_DEFENCE*0.2);
                                     System.out.printf("You Gain +%.2f Defence\n",reward);
-                                    return new double[]{1, current_hp, current_atk, current_def,reward,0};
+                                    return new double[]{1, current_hp, current_atk, current_def,reward};
                                 }
                             }
                         } else{
@@ -138,9 +142,27 @@ public class Mini_RPG {
                     System.out.print("DUMB BITCH IT'S STILL NOT INCLUDE\n");
                 } else if (chose == 4) {
                     double run_value = random.nextDouble(0,300);
-                    if (run_value >= 160) { // 160 Const
+                    if (run_value >= 160 || status[1]) { // 160 Const
                         System.out.print("Successful| You Run Away From Monster\n");
                         return new double[]{0, current_hp, current_atk, current_def,0};
+                    } else {
+                        System.out.print("FAILED| Monster Catch You and Slash You \n");
+                        double multipler = random.nextDouble(0.5,1.2); //Crit or Miss
+                        System.out.printf("FAILED| You take hit from Monster Deal %.2f Damage (%.2f Multipler)\n",multipler*monster_atk,multipler);
+                        current_hp -= multipler * monster_atk;
+                        if (current_hp <= 0) {
+                            boolean atk_def = random.nextBoolean();
+                            System.out.print("You Slain The Monster\n");
+                            if (atk_def) {
+                                double reward = random.nextDouble(MAX_ATK * 0.1, MAX_ATK * 0.2);
+                                System.out.printf("You Gain +%.2f Attack\n", reward);
+                                return new double[]{1, current_hp, current_atk + reward, current_def, 0};
+                            } else {
+                                double reward = random.nextDouble(MAX_DEFENCE * 0.1, MAX_DEFENCE * 0.2);
+                                System.out.printf("You Gain +%.2f Defence\n", reward);
+                                return new double[]{1, current_hp, current_atk, current_def, reward};
+                            }
+                        }
                     }
                 }
             } else {
@@ -150,7 +172,7 @@ public class Mini_RPG {
                 if (!status[1]){
                     double hit = random.nextDouble(0,100);
                     if (hit >= current_def + 40){
-                        double multipler = random.nextDouble(0.5,1.5); //Crit or Miss
+                        double multipler = random.nextDouble(0.5,1.2); //Crit or Miss
                         System.out.printf("FAILED| You take hit from Monster Deal %.2f Damage (%.2f Multipler)\n",multipler*monster_atk,multipler);
                         current_hp -= multipler * monster_atk;
                         if (current_hp <= 0){
@@ -242,12 +264,16 @@ public class Mini_RPG {
         current_hp = MAX_HP * 0.5; // Gain by Restore
         current_def = 0; // Gain by Armors
         current_atk = MAX_ATK * 0.1; // Gain by Lvl And weapons
+        double [] result = new double[5];
 
         while (current_hp > 0){ // If player alive
             difficulty = 50 * (((current_hp / MAX_HP) - 0.3) + (current_atk / MAX_ATK)) + (MAX_DEFENCE/2);
             double[] monster = Monster_Generation(difficulty, win_streak);
             double monster_hp = monster[0];
             double monster_atc = monster[1];
+            if (monster_atc*7 > current_hp){
+                monster_atc /= 2;
+            }
             double monster_def = monster[2] * 0.1;
             boolean monster_stunned = false;
             boolean player_stunned = false;
@@ -266,7 +292,6 @@ public class Mini_RPG {
             System.out.print("0- Leave Game\n");
             System.out.print("-----------------------------------\n");
             int chose = input.nextInt();
-            double [] result = new double[5];
             if (chose == 0){
                 break; // Leave While
             } else if (chose == 1) {
@@ -291,6 +316,7 @@ public class Mini_RPG {
                 if (run_value >= difficulty){
                     win_streak = 0;
                     System.out.print("Successful| You Run Away From Monster\n");
+                    result = new double[] {0,current_hp,current_atk,current_def,0};
                 }
                 else{
                     result = Player_vs_Monster(name,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
@@ -302,15 +328,16 @@ public class Mini_RPG {
                 if (run_value >= difficulty){
                     win_streak = 0;
                     System.out.print("Successful| You Run Away From Monster\n");
+                    result = new double[] {0,current_hp,current_atk,current_def,0};
                 }
                 else{
                     result = Player_vs_Monster(name,new double[] {current_hp,current_atk,current_def},new double[] {MAX_HP,MAX_ATK,MAX_DEFENCE},
                             new double[] {monster_hp, monster_atc,monster_def},monster,new boolean[] {player_stunned,monster_stunned});
                 }
             }
-            current_hp = Math.min(result[1]*1.3,MAX_HP); // %30 heal
-            current_def = result[2]*0.5; // Lose some defense
-            current_atk = result[3];
+            current_hp = Math.min(result[1]+(MAX_HP*0.3),MAX_HP); // %30 heal
+            current_def = result[3]*0.5; // Lose some defense
+            current_atk = result[2];
             MAX_DEFENCE += result[4];
             if (result[0] == 1){
                 win_streak ++;
