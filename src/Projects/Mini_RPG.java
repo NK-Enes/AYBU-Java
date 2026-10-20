@@ -6,7 +6,6 @@ This is a basic RPG game on terminal
 
 import java.util.Scanner;
 import java.util.Random;
-import java.util.Arrays;
 
 public class Mini_RPG {
     static double[] Monster_Generation (double difficulty,int win_streak){
@@ -49,11 +48,6 @@ public class Mini_RPG {
         return new double[] {health,damage};
     }
 
-    static double Justice (){
-        System.out.print("SUCCESSFUL| GOD DECIDE DIE !!!\n");
-        return 0; // enemy health
-    }
-
     static double Gather (double health,double MAX_HP){
         Random random = new Random();
         boolean harvest = true;
@@ -84,10 +78,10 @@ public class Mini_RPG {
         int attack_counter = 0;
         int max_ability_count = switch (character_class){
             case "Warrior" -> 3; // Regen %50 of MAX-CURRENT
-            case "Archer" -> 5; // Multi Attack
-            case "Mage" -> 2;
+            case "Archer" -> 2; // Multi Attack
+            case "Mage" -> 1;
             case "God" -> 999;
-            case "Farmer" -> 10;
+            case "Farmer" -> 5;
             default -> 0;
         };
         int ability_count = max_ability_count;
@@ -297,6 +291,22 @@ public class Mini_RPG {
                                 current_hp = Gather(current_hp,MAX_HP);
                                 break;
                         }
+                        if (!status[1]){
+                            double hit = random.nextDouble(0,100);
+                            if (hit >= current_def){
+                                double multipler = random.nextDouble(0.5,1.2); //Crit or Miss
+                                System.out.printf("FAILED| You take hit from Monster Deal %.2f Damage (%.2f Multipler)\n",multipler*monster_atk,multipler);
+                                current_hp -= multipler * monster_atk;
+                                if (current_hp <= 0){
+                                    return new double[]{1, current_hp, current_atk, current_def,0};
+                                }
+                            } else{
+                                System.out.print("SUCCESSFUL| You dodged Monster's Attack\n");
+                            }
+                        } else {
+                            System.out.print("STUNNED| Monster is stunned\n");
+                            status[1] = false;
+                        }
                     } else {
                         System.out.print("You Out off Ability\n");
                     }
@@ -366,6 +376,7 @@ public class Mini_RPG {
         double MAX_ATK = 0;
 
         int win_streak = 0;
+        int won = 0;
         double difficulty;
 
         double current_hp = 0;
@@ -505,7 +516,9 @@ public class Mini_RPG {
             } else {
                 win_streak = 0;
             }
+            won += result[0];
         }
 
+        System.out.printf("You Slay %d Monster On your lifetime",won);
     }
 }
