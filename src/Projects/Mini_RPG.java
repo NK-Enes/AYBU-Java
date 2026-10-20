@@ -41,13 +41,13 @@ public class Mini_RPG {
         while (current_hp > 0 && monster_hp > 0){
             String player_state,monster_state;
             if (!status[0]){
-                player_state = "Uncrowded";
+                player_state = "Ready";
             } else {
                 player_state = "Stunned";
             }
 
             if (!status[1]){
-                monster_state = "Uncrowded";
+                monster_state = "Ready";
             } else {
                 monster_state = "Stunned";
             }
@@ -280,7 +280,7 @@ public class Mini_RPG {
 
             System.out.print("\n\n\n===================================\n"); //35
             System.out.printf("%14s (%s)\nHP: %22.2f / %.2f\nAtk: %22.2f / %.2f\nDef: %22.2f / %.2f\n",
-                    name,"Uncrowded",current_hp,MAX_HP,current_atk,MAX_ATK,current_def,MAX_DEFENCE);
+                    name,"Ready",current_hp,MAX_HP,current_atk,MAX_ATK,current_def,MAX_DEFENCE);
             System.out.print("-----------------------------------\n");
             System.out.printf("%19s\nHP: %22.2f / %.2f\nAtk: %22.2f / %.2f\nDef: %22.2f / %.2f\n",
                     "Monster_"+win_streak,monster_hp,monster[0],monster_atc,monster[1],monster_def,monster[2]);
