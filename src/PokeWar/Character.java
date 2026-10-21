@@ -88,6 +88,13 @@ public abstract class Character {
         this.attack_change(changes[2]);
     }
 
+    public void position_change(Position position){
+        if (this.position != position){
+            this.rechange_change(0,this.position.numeric);
+            this.position = position;
+        }
+    }
+
     public void rechange_change (int index,double value){
         this.rechange[index] = value;
     }
