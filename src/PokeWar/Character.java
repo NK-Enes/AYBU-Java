@@ -57,9 +57,9 @@ public abstract class Character {
         ATK: %.2f/%.2f
         Stats [DEALT: %.2f\t SUSTAINED: %.2f]""".formatted(
                 name, ID, position.str,
-                '%', hit_change,
-                '%', dodge_change,
-                '%', guard_change,
+                '%', hit_change*100,
+                '%', dodge_change*100,
+                '%', guard_change*100,
                 current_hp, MAX_HP,
                 current_def, MAX_DEF,
                 current_atk, MAX_ATK,
@@ -98,7 +98,7 @@ public abstract class Character {
 
     public double[] attack (){
         double hit_happen = random.nextDouble();
-        if (hit_happen >= hit_change){
+        if (hit_happen >= (1-hit_change)){
             return new double[] {1,this.position.numeric,current_atk}; // Successful
         } else {
             return new double[] {0,this.position.numeric,current_atk}; // Failed
@@ -107,9 +107,16 @@ public abstract class Character {
 
     public abstract void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies);
 
-    public void guard (double expected_damage) { //todo Add Damage Type
+    public void guard (double expected_damage,boolean defend) { //todo Add Damage Typei
+        if (!defend){ // If Attack CAN'T guard (Real Damage / True Hit)
+            System.out.printf("%s [%s] Guard  %c75 of This Attack\n",this.name,this.ID,'%');
+            this.health_change(expected_damage);
+            this.dodge_count++;
+            this.guard_count++;
+            return;
+        }
         double dodge_happen = random.nextDouble();
-        if (dodge_happen >= dodge_change){
+        if (dodge_happen >= (1-this.dodge_change)){
             // Total Dodge
             System.out.printf("%s [%s] Dodged This Attack\n",this.name,this.ID);
             this.dodge_count ++;
@@ -117,16 +124,19 @@ public abstract class Character {
         }
         this.dodge_count = 0;
         double guard_happen = random.nextDouble();
-        if (guard_happen >= this.guard_change){
+        if (guard_happen >= (1-this.guard_change)){
             // %75 Absorb
+            System.out.printf("%s [%s] Guard  %c75 of This Attack\n",this.name,this.ID,'%');
             this.health_change(-0.25 * expected_damage);
             this.guard_count ++;
-        } else if (guard_happen >= this.guard_change/2) {
+        } else if (guard_happen >= (1-this.guard_change/2)) {
             // %50 Absorb
+            System.out.printf("%s [%s] Guard  %c50 of This Attack\n",this.name,this.ID,'%');
             this.health_change(-0.5 * expected_damage);
             this.guard_count ++;
         } else {
             // %0 Absorb
+            System.out.printf("%s [%s] Can't Guard of This Attack\n",this.name,this.ID);
             this.health_change(-1 * expected_damage);
             this.guard_count = 0; // Count down to zero
         }
