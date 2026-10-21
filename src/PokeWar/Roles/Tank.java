@@ -19,7 +19,7 @@ public class Tank extends Character {
                 new double[] {200.0,60.0,25.0,15.0},
                 new double[] {200.0,60.0,25.0},
                 Position.FRONT,
-                new double[] {0.15,0.05,0.6}
+                new double[] {0.5,0.05,0.6}
         );
         this.current_position = Position.NONE;
     }
