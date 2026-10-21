@@ -14,7 +14,8 @@ public abstract class Character {
     Random random = new Random();
 
     protected String name,ID;
-    protected double[] rechange;
+    protected double[] rechange,rechange_posibilities;
+
     protected double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
     protected double current_hp,current_def,current_atk;
     protected Position position = Position.NONE;
@@ -32,6 +33,7 @@ public abstract class Character {
         this.hit_change = changes[0];
         this.dodge_change = changes[1];
         this.guard_change = changes[2];
+        this.rechange_posibilities = new double[] {0, 0, 0}; // hit,dodge,guard
 
         this.MAX_HP = MAXs[0];
         this.MAX_DEF = MAXs[1];
@@ -96,7 +98,11 @@ public abstract class Character {
     }
 
     public void rechange_change (int index,double value){
-        this.rechange[index] = value;
+        this.rechange[index] += value;
+    }
+
+    public void setRechange_posibilities_change (int index, double value){
+        this.rechange_posibilities[index] += value;
     }
 
     public boolean is_alive (){
@@ -110,6 +116,11 @@ public abstract class Character {
         } else {
             return new double[] {0,this.position.numeric,current_atk}; // Failed
         }
+    }
+
+    public void defend () {
+        this.setRechange_posibilities_change(2,this.guard_change * 0.5);
+        this.guard_change *= 0.5;
     }
 
     public abstract void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies);
