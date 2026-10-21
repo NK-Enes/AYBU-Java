@@ -8,4 +8,50 @@ ve takımda hala savaşabilecek kimse kalıp kalmadığını kontrol etmelidir.
 */
 
 public class Team {
+    private String name;
+    private Character[] members;
+
+    public Team (String name,Character[] members){
+        this.name = name;
+        this.members = members;
+    }
+
+    public void change_member_position (String ID,Position target_position){
+        for (Character member: this.members){
+            if (member.ID.equals(ID)){
+                member.position_change(target_position);
+                return;
+            }
+        }
+    }
+
+    public boolean is_team_valid (){
+        for (Character member : this.members){
+            if (member.is_alive()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String get_team_name (){
+        return this.name;
+    }
+
+    public Character[] get_team_members (){
+        return this.members;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("--- ").append(this.name).append(" Durumu ---\n");
+
+        for (Character c : this.members) {
+            String durum = c.current_hp > 0 ? "Can: " + c.current_hp : "ÖLÜ";
+            sb.append("- ").append(c.name).append(" (").append(durum).append(")\n");
+        }
+
+        return sb.toString();
+    }
 }
