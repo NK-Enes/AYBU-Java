@@ -56,10 +56,13 @@ public abstract class Character {
     Random random = new Random();
 
     protected String name,ID;
-    protected double[] rechange;
+    public String explanation;
+    protected double[] rechange,rechange_posibilities;
+
     protected double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
     protected double current_hp,current_def,current_atk;
     protected Position position = Position.NONE;
+    public Position current_position;
     protected double hit_change,dodge_change,guard_change;
 
     protected double damage_dealt,damage_sustained;
@@ -74,6 +77,7 @@ public abstract class Character {
         this.hit_change = changes[0];
         this.dodge_change = changes[1];
         this.guard_change = changes[2];
+        this.rechange_posibilities = new double[] {0, 0, 0}; // hit,dodge,guard
 
         this.MAX_HP = MAXs[0];
         this.MAX_DEF = MAXs[1];
@@ -109,6 +113,14 @@ public abstract class Character {
         );
     }
 
+    public String toShortString(){
+        return """
+                [%s]\t-HP: %d\t|ATK: %d\t|DEF: %d|FOCUS: %s
+                """.formatted(
+                this.name,this.current_hp,this.current_atk,this.current_def,this.explanation
+        );
+    }
+
     protected void health_change (double amount){
         this.current_hp = Math.clamp(this.current_hp + amount,0, MAX_HP);
         if (amount < 0){
@@ -138,7 +150,11 @@ public abstract class Character {
     }
 
     public void rechange_change (int index,double value){
-        this.rechange[index] = value;
+        this.rechange[index] += value;
+    }
+
+    public void setRechange_posibilities_change (int index, double value){
+        this.rechange_posibilities[index] += value;
     }
 
     public boolean is_alive (){
@@ -154,7 +170,14 @@ public abstract class Character {
         }
     }
 
+    public void defend () {
+        this.setRechange_posibilities_change(2,0.5);
+        this.guard_change += 0.5;
+    }
+
     public abstract void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies);
+
+    public abstract String infoAbility (int skillIndex);
 
     public void guard (double expected_damage,boolean defend) { //todo Add Damage Typei
         if (!defend){ // If Attack CAN'T guard (Real Damage / True Hit)
@@ -246,6 +269,16 @@ public class Tank extends Character {
     }
 
     @Override
+    public String infoAbility(int skillIndex){
+        return switch (skillIndex){
+            case 1 -> "TAUNT pozisyonuna geçer.";
+            case 2 -> "Tüm grubun defans değerini arttırır.";
+            case 3 -> "Defans değeri kadar saldırı gücü kazanır.";
+            default -> "Geçersiz Yetenek";
+        };
+    }
+
+    @Override
     public void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies) {
         switch (skillIndex) {
             case 1 -> Skill_1(target,allies,enemies);
@@ -275,7 +308,7 @@ import PokeWar.Character;
 import PokeWar.Position;
 
 public class Archer extends Character {
-    Position current_position;
+    public Position current_position;
     public Archer (String name,String ID){
         super(
                 name,ID,
@@ -320,6 +353,16 @@ public class Archer extends Character {
             }
         }
         target.guard(expected_damage,true);
+    }
+
+    @Override
+    public String infoAbility(int skillIndex){
+        return switch (skillIndex){
+            case 1 -> "Rakibe kaçamayacağı bir saldırı yapar. (X 0.7-1.5)";
+            case 2 -> "Tüm rakiplere birer saldırı yapar.";
+            case 3 -> "Bir rakibe ard arda saldırı yapar.";
+            default -> "Geçersiz Yetenek";
+        };
     }
 
     @Override
@@ -402,66 +445,36 @@ public class Team {
 
 ---
 
-### Adım 4: Savaş Motoru ve Hız Mantığı (`BattleEngine.java`)
+### Adım 4: Savaş Motoru ve Hız Mantığı (`GameEngine.java`)
 
 ```java
-package game.engine;
+package PokeWar;
 
-import game.model.Hero;
-import game.model.Team;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+/*
+Ne işe yarayacak? İki takımın birbirine karşı sırayla nasıl savaşacağını yöneten ana mekanizma olacak.
 
-public class BattleEngine {
-    private Team team1;
-    private Team team2;
+Nasıl çalışmalı? Her turun başında her iki takımın tüm canlı karakterlerini toplamalı, bu karakterleri hızlarına (speed) göre büyükten küçüğe sıralayarak bir
+sıra kuyruğu (Turn Queue) oluşturmalıdır. Hızı yüksek olan karakterin hamleyi önce yapmasını sağlamalı ve döngüyü taraflardan biri yenilene kadar devam
+ettirmelidir.
+*/
 
-    public BattleEngine(Team t1, Team t2) {
-        this.team1 = t1;
-        this.team2 = t2;
-    }
 
-    public void startBattle() {
-        int round = 1;
-        
-        while (!team1.isTeamDefeated() && !team2.isTeamDefeated()) {
-            System.out.println("\n================ ROUND " + round + " ================");
-            
-            // 1. Sahadaki tüm canlı birimleri topla
-            List<Hero> turnOrder = new ArrayList<>();
-            turnOrder.addAll(team1.getActiveHeroes());
-            turnOrder.addAll(team2.getActiveHeroes());
+public class GameEngine {
 
-            // 2. HIZ (Speed) Statına göre sırala (Polymorphic & Comparable)
-            Collections.sort(turnOrder);
+}
 
-            // 3. Sırayla hamle yaptır
-            for (Hero hero : turnOrder) {
-                if (!hero.isAlive()) continue; // Tur içinde öldüyse pas geç
 
-                Team enemyTeam = (hero.getTeamId() == 1) ? team2 : team1;
-                Team allyTeam = (hero.getTeamId() == 1) ? team1 : team2;
+```
 
-                if (enemyTeam.getActiveHeroes().isEmpty()) break;
 
-                // Örnek basit AI hamlesi: Karşı ön hattan rastgele birine veya skille saldırt
-                Hero target = enemyTeam.getActiveHeroes().get(0);
-                
-                // Polimorfizm Burada Çalışır:
-                if (Math.random() > 0.4) {
-                    hero.useSkill(target, allyTeam, enemyTeam);
-                } else {
-                    hero.basicAttack(target);
-                }
-            }
+```java
+package PokeWar;
 
-            round++;
-            if (round > 20) break; // Sonsuz döngü koruması
-        }
+import PokeWar.Roles.Archer;
+import PokeWar.Roles.Tank;
 
-        System.out.println("\n🏆 SAVAŞ BİTTİ! KAZANAN: " + (team1.isTeamDefeated() ? "Takım 2" : "Takım 1"));
-    }
+public class Main {
+
 }
 ```
 
@@ -538,7 +551,189 @@ public enum Position {
 
 ---
 
-## 5. Bu Mimari Size Ne Kazandıracak?
+### 4. UI Manager
+
+
+```java
+package PokeWar;
+
+import java.lang.reflect.Method;
+
+public class UIManager {
+public static void printBanner(String text) {
+System.out.println("========================================");
+System.out.println("       " + text.toUpperCase() + "       ");
+System.out.println("========================================");
+}
+
+
+    public static void team_build(String player_name, Character[] characters) {
+        // Step 1: Mevcut kadro listesini dinamik olarak oluşturuyoruz
+        StringBuilder kadroBuilder = new StringBuilder();
+        for (int i = 0; i < characters.length; i++) {
+            kadroBuilder.append(String.format("          (%d) %s%n", i + 1, characters[i].toShortString()));
+        }
+
+        // Step 2: Karakterlerin pozisyonlarına göre slotları dolduruyoruz
+        String slotA = "(Boş)";
+        String slotB = "(Boş)";
+        String slotC = "(Boş)";
+
+        int frontIndex = 0;
+        for (Character c : characters) {
+            if (c.current_position == Position.FRONT) {
+                if (frontIndex == 0) {
+                    slotA = c.name;
+                } else if (frontIndex == 1) {
+                    slotB = c.name;
+                }
+                frontIndex++;
+            } else if (c.current_position == Position.BACK) {
+                slotC = c.name;
+            }
+        }
+
+        // Step 3: Arayüz şablonunu hazırlayıp ekrana basıyoruz
+        String template = """
+            ================================================================================
+                                  TAKTİK DİZİLİM SEÇİMİ (2 ÖN - 1 ARKA)
+            ================================================================================
+             Oyuncu: %s (Diğer oyuncu bakmasın!)
+            --------------------------------------------------------------------------------
+            
+             [ MEVCUT KADRON ]
+            %s--------------------------------------------------------------------------------
+             [ POZİSYON SLOTLARI ]
+            
+               ( ÖN HAT - Maks 2 Karakter )
+               [ Slot A ] : NO BUFF
+               [ Slot B ] : NO BUFF
+            
+               ( ARKA HAT - Maks 1 Karakter )
+               [ Slot C ] : NO BUFF
+            
+            ================================================================================
+             Hangi karakteri nerede konumlandırmak istiyorsun?
+             (Örn: "1 A" -> Barbar'ı Slot A'ya koyar, "CLEAR" -> Sıfırlar, "OK" -> Onayla)
+            --------------------------------------------------------------------------------
+            > """;
+
+        System.out.printf(template, player_name, kadroBuilder.toString(), slotA, slotB, slotC);
+    }
+
+    public static void printActionMenu(String playerName, String teamName, Character activeChar) {
+        String template = """
+        ================================================================================
+                                HAMLE SIRA EKRANI (TUR BİLGİSİ)
+        ================================================================================
+         Oyuncu: %s | Takım: %s
+         Sıradaki Karakter: %s [%s]
+        --------------------------------------------------------------------------------
+         
+         [ %s STATLAR ]
+          - Can (HP)     : %.2f / %.2f
+          - Pozisyon     : %s
+          - Saldırı (ATK): %.2f
+          - Savunma (DEF): %.2f
+          - Hız (SPEED)  : %.2f
+        
+        --------------------------------------------------------------------------------
+         [ YAPILACAK EYLEMİ SEÇİN ]
+          (1) Temel Saldırı (Basic Attack)
+          (2) Temel Savunma (Guard Stance)
+          (3) Özel Yetenekler (Skills)
+        ================================================================================
+        > """;
+
+        System.out.printf(template,
+                playerName, teamName,
+                activeChar.name, activeChar.ID,activeChar.name,
+                activeChar.current_hp, activeChar.MAX_HP,
+                activeChar.position.str,
+                activeChar.current_atk,
+                activeChar.current_def,
+                activeChar.SPEED
+        );
+    }
+
+    public static void printBasicAttackTargetMenu(Character activeChar, Character[] possibleTargets) {
+        StringBuilder targetsBuilder = new StringBuilder();
+        for (int i = 0; i < possibleTargets.length; i++) {
+            targetsBuilder.append(String.format("          (%d) %s%n", i + 1, possibleTargets[i].toShortString()));
+        }
+
+        String template = """
+        ================================================================================
+                             TEMEL SALDIRI - HEDEF SEÇİMİ
+        ================================================================================
+         Saldıran: %s [%s] (Mevcut ATK: %.1f)
+        --------------------------------------------------------------------------------
+        
+         [ SEÇİLEBİLİR DÜŞMAN HEDEFLERİ ]
+          (0) ⬅️ GERİ DÖN (Ana Menüye)
+        %s--------------------------------------------------------------------------------
+         Hangi hedefe saldırmak istiyorsun?
+         (Örn: "1" -> İlk sıradaki hedefi seçer, "0" -> İptal edip ana menüye döner)
+        --------------------------------------------------------------------------------
+        > """;
+
+        System.out.printf(template, activeChar.name, activeChar.ID, activeChar.current_atk, targetsBuilder.toString());
+    }
+
+    public static void printSkillMenu(Character activeChar, Method[] skills) {
+        StringBuilder skillListBuilder = new StringBuilder();
+        for (int i = 0; i < skills.length; i++) {
+            skillListBuilder.append(String.format("          (%d) %-25s : %s%n",
+                    i + 1, skills[i].getName(), activeChar.infoAbility(i+1)));
+        }
+
+        String template = """
+        ================================================================================
+                              ÖZEL YETENEK SEÇİMİ (SKILLS)
+        ================================================================================
+         Karakter: %s [%s]
+        --------------------------------------------------------------------------------
+        
+         [ KULLANILABİLİR YETENEKLER ]
+          (0) ⬅️ GERİ DÖN (Ana Menüye)
+        %s--------------------------------------------------------------------------------
+         Kullanmak istediğin yeteneği seç:
+         (Örn: "1" -> 1. Yeteneği seçer, "0" -> İptal edip ana menüye döner)
+        --------------------------------------------------------------------------------
+        > """;
+
+        System.out.printf(template, activeChar.name, activeChar.ID, skillListBuilder.toString());
+    }
+
+    public static void printSkillTargetMenu(Method selectedSkill, Character[] possibleTargets) {
+        StringBuilder targetsBuilder = new StringBuilder();
+        for (int i = 0; i < possibleTargets.length; i++) {
+            targetsBuilder.append(String.format("          (%d) %s%n", i + 1, possibleTargets[i].toShortString()));
+        }
+
+        String template = """
+        ================================================================================
+                             YETENEK HEDEFİ SEÇİMİ
+        ================================================================================
+         Seçilen Yetenek: %s
+        --------------------------------------------------------------------------------
+        
+         [ SEÇİLEBİLİR HEDEFLER ]
+          (0) ⬅️ GERİ DÖN (Yetenek Seçim Ekranına)
+        %s--------------------------------------------------------------------------------
+         Yeteneğin uygulanacağı hedefi seç:
+         (Örn: "1" -> Target 1, "0" -> İptal edip yetenek listesine döner)
+        --------------------------------------------------------------------------------
+        > """;
+
+        System.out.printf(template, selectedSkill.getName(), targetsBuilder.toString());
+    }
+}
+```
+
+---
+
+## 6. Bu Mimari Size Ne Kazandıracak?
 
 1. **Yeni Rol Eklemek Çok Kolay:** Sisteme yarın `Necromancer` veya `Bard` eklemek istediğinizde var olan kodu değiştirmeden sadece `Hero` sınıfını `extend` eden yeni bir sınıf yazmanız yeterli olacaktır (Open/Closed Principle).
 2. **Çok Biçimlilik (Polymorphism) Pratiği:** `turnOrder` listesindeki her eleman aslında bir `Hero`'dur, ancak sırası geldiğinde `.useSkill()` denildiğinde her birim kendi özel yeteneğini çalıştırır (`Assassin` arkaya atlar, `Healer` can basar).
