@@ -43,6 +43,16 @@ public class Tank extends Character {
     }
 
     @Override
+    public String infoAbility(int skillIndex){
+        return switch (skillIndex){
+            case 1 -> "TAUNT pozisyonuna geçer.";
+            case 2 -> "Tüm grubun defans değerini arttırır.";
+            case 3 -> "Defans değeri kadar saldırı gücü kazanır.";
+            default -> "Geçersiz Yetenek";
+        };
+    }
+
+    @Override
     public void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies) {
         switch (skillIndex) {
             case 1 -> Skill_1(target,allies,enemies);

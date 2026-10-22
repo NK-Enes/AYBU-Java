@@ -13,7 +13,7 @@ import PokeWar.Character;
 import PokeWar.Position;
 
 public class Archer extends Character {
-    Position current_position;
+    public Position current_position;
     public Archer (String name,String ID){
         super(
                 name,ID,
@@ -58,6 +58,16 @@ public class Archer extends Character {
             }
         }
         target.guard(expected_damage,true);
+    }
+
+    @Override
+    public String infoAbility(int skillIndex){
+        return switch (skillIndex){
+            case 1 -> "Rakibe kaçamayacağı bir saldırı yapar. (X 0.7-1.5)";
+            case 2 -> "Tüm rakiplere birer saldırı yapar.";
+            case 3 -> "Bir rakibe ard arda saldırı yapar.";
+            default -> "Geçersiz Yetenek";
+        };
     }
 
     @Override
