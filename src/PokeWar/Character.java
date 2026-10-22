@@ -14,11 +14,13 @@ public abstract class Character {
     Random random = new Random();
 
     protected String name,ID;
+    public String explanation;
     protected double[] rechange,rechange_posibilities;
 
     protected double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
     protected double current_hp,current_def,current_atk;
     protected Position position = Position.NONE;
+    public Position current_position;
     protected double hit_change,dodge_change,guard_change;
 
     protected double damage_dealt,damage_sustained;
@@ -66,6 +68,14 @@ public abstract class Character {
                 current_def, MAX_DEF,
                 current_atk, MAX_ATK,
                 damage_dealt, damage_sustained
+        );
+    }
+
+    public String toShortString(){
+        return """
+                [%s]\t-HP: %d\t|ATK: %d\t|DEF: %d|FOCUS: %s
+                """.formatted(
+            this.name,this.current_hp,this.current_atk,this.current_def,this.explanation
         );
     }
 
@@ -119,11 +129,13 @@ public abstract class Character {
     }
 
     public void defend () {
-        this.setRechange_posibilities_change(2,this.guard_change * 0.5);
-        this.guard_change *= 0.5;
+        this.setRechange_posibilities_change(2,0.5);
+        this.guard_change += 0.5;
     }
 
     public abstract void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies);
+
+    public abstract String infoAbility (int skillIndex);
 
     public void guard (double expected_damage,boolean defend) { //todo Add Damage Typei
         if (!defend){ // If Attack CAN'T guard (Real Damage / True Hit)
