@@ -8,5 +8,8 @@ sıra kuyruğu (Turn Queue) oluşturmalıdır. Hızı yüksek olan karakterin ha
 ettirmelidir.
 */
 
+
 public class GameEngine {
+
 }
+
