@@ -45,6 +45,7 @@ public class GameEngine {
                         .findFirst()                                    // 2. İlk eşleşeni al
                         .orElse(null);                            // 3. Bulunamazsa null döndür
                 assert character != null;
+                character.Active_relists();
                 UIManager.printActionMenu(turn_ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
 
                 int user_chose = input.nextInt();
@@ -88,13 +89,21 @@ public class GameEngine {
             double[] result = character.attack();
             if (result[0] == 1){
                 possible_targets.get(user_chose-1).guard(result[1],true);
+            } else {
+                System.out.printf("%s [%s] Missed Attack",character.name,character.ID);
             }
             return true;
         }
     }
 
     private boolean UserDefend (Character character){
-        return false;
+        double new_stat = character.defend(character.Type_return());
+        if (character.Type_return()){
+            System.out.printf("%s [%s] | Ready To Dodge Attack (%c%.0f)\n",character.name,character.ID,'%',new_stat*100);
+        } else {
+            System.out.printf("%s [%s] | Ready Block Attack (%c%.0f)\n",character.name,character.ID,'%',new_stat*100);
+        }
+        return true;
     }
 
     private boolean UserSkill (Character character){
