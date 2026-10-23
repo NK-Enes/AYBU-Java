@@ -60,6 +60,7 @@ public class GameEngine {
                     System.out.print("Geçersiz Girdi");
                 }
             }
+            try {Thread.sleep(1500);} catch (InterruptedException e) {}
         }
     }
 

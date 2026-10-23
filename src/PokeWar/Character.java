@@ -135,13 +135,15 @@ public abstract class Character {
         }
     }
 
-    public void defend (boolean dexterity) {
+    public double defend (boolean dexterity) {
         if (dexterity){
             this.setRechange_posibilities_change(1,0.5);
             this.dodge_change += 0.5;
+            return this.dodge_change;
         } else {
             this.setRechange_posibilities_change(2,0.5);
             this.guard_change += 0.5;
+            return this.guard_change;
         }
     }
 
@@ -162,7 +164,6 @@ public abstract class Character {
             // Total Dodge
             System.out.printf("%s [%s] Dodged This Attack (0 Damage Taken)\n",this.name,this.ID);
             this.dodge_count ++;
-            try {Thread.sleep(1500);} catch (InterruptedException e) {}
             return;
         }
         this.dodge_count = 0;
@@ -183,8 +184,6 @@ public abstract class Character {
             this.health_change(-1 * expected_damage);
             this.guard_count = 0; // Count down to zero
         }
-
-        try {Thread.sleep(1500);} catch (InterruptedException e) {}
     }
 
 }
