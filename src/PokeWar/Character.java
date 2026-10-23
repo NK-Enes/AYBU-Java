@@ -26,6 +26,7 @@ public abstract class Character {
     protected int dodge_count,guard_count;
 
     public Character(String name,String ID,String explanation,Position current_position,double[] MAXs,double[] currents,Position position,double[] changes){
+        Random random = new Random();
         this.name = name;
         this.ID = ID;
         this.explanation = explanation;
@@ -40,7 +41,7 @@ public abstract class Character {
         this.MAX_HP = MAXs[0];
         this.MAX_DEF = MAXs[1];
         this.MAX_ATK = MAXs[2];
-        this.SPEED = MAXs[3];
+        this.SPEED = MAXs[3] + random.nextDouble(0.0,0.1); // Add some randomness (between same units)
 
         this.current_hp = currents[0];
         this.current_def = currents[1];
