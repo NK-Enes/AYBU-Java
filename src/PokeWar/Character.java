@@ -19,17 +19,17 @@ public abstract class Character {
 
     protected double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
     protected double current_hp,current_def,current_atk;
-    protected Position position = Position.NONE;
     public Position current_position;
     protected double hit_change,dodge_change,guard_change;
 
     protected double damage_dealt,damage_sustained;
     protected int dodge_count,guard_count;
 
-    public Character(String name,String ID,double[] MAXs,double[] currents,Position position,double[] changes){
+    public Character(String name,String ID,String explanation,Position current_position,double[] MAXs,double[] currents,Position position,double[] changes){
         this.name = name;
         this.ID = ID;
-        this.position = position;
+        this.explanation = explanation;
+        this.current_position = current_position;
         this.rechange = new double[] {0, 0, 0, 0}; //Position, hp, def, atk
 
         this.hit_change = changes[0];
@@ -60,7 +60,7 @@ public abstract class Character {
         DEF: %.2f/%.2f
         ATK: %.2f/%.2f
         Stats [DEALT: %.2f\t SUSTAINED: %.2f]""".formatted(
-                name, ID, position.str,
+                name, ID, current_position.str,
                 '%', hit_change*100,
                 '%', dodge_change*100,
                 '%', guard_change*100,
@@ -73,7 +73,7 @@ public abstract class Character {
 
     public String toShortString(){
         return """
-                [%s]\t-HP: %d\t|ATK: %d\t|DEF: %d|FOCUS: %s
+                [%s]\t-HP: %.0f\t|ATK: %.0f\t|DEF: %.0f|FOCUS: %s
                 """.formatted(
             this.name,this.current_hp,this.current_atk,this.current_def,this.explanation
         );
@@ -100,10 +100,12 @@ public abstract class Character {
         this.attack_change(changes[2]);
     }
 
-    public void position_change(Position position){
-        if (this.position != position){
-            this.rechange_change(0,this.position.numeric);
-            this.position = position;
+    public void position_change(Position position,boolean add_to_rechange){
+        if (this.current_position != position){
+            if (add_to_rechange){
+                this.rechange_change(0,this.current_position.numeric);
+            }
+            this.current_position = position;
         }
     }
 
@@ -122,9 +124,9 @@ public abstract class Character {
     public double[] attack (){
         double hit_happen = random.nextDouble();
         if (hit_happen >= (1-hit_change)){
-            return new double[] {1,this.position.numeric,current_atk}; // Successful
+            return new double[] {1,this.current_position.numeric,current_atk}; // Successful
         } else {
-            return new double[] {0,this.position.numeric,current_atk}; // Failed
+            return new double[] {0,this.current_position.numeric,current_atk}; // Failed
         }
     }
 
