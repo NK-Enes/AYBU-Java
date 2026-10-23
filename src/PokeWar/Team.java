@@ -7,6 +7,9 @@ Nasıl çalışmalı? İstediğiniz gibi aynı anda 2 ön, 1 arka (veya toplam d
 ve takımda hala savaşabilecek kimse kalıp kalmadığını kontrol etmelidir.
 */
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Team {
     private String name;
     private Character[] members;
@@ -46,6 +49,16 @@ public class Team {
 
     public Character[] get_team_members (){
         return this.members;
+    }
+
+    public Character[] get_active_team_members (){
+        List<Character> result = new ArrayList<>();
+        for (Character c: this.members){
+            if (c.active() && c.is_alive()){
+                result.add(c);
+            }
+        }
+        return result.toArray(new Character[0]);
     }
 
     @Override
