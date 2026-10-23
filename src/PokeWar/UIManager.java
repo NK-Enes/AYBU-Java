@@ -1,16 +1,32 @@
 package PokeWar;
 
 import java.lang.reflect.Method;
+import java.util.Scanner;
 
 public class UIManager {
     public static void printBanner(String text) {
-        System.out.println("========================================");
-        System.out.println("       " + text.toUpperCase() + "       ");
-        System.out.println("========================================");
+        System.out.println("================================================================================");
+        System.out.println("                                    " + text.toUpperCase());
+        System.out.println("================================================================================\n\n");
+    }
+
+    public static String get_player_name (boolean first){
+        Scanner input = new Scanner(System.in);
+        System.out.println("================================================================================");
+        if (first){
+            System.out.print("Guten Tag, Kommandant. Wie lautet Ihr Name: ");
+        } else {
+            System.out.print("Приветствую, командир. Как вас зовут: ");
+        }
+        String name = input.nextLine();
+        System.out.println("================================================================================\n\n");
+        return name;
     }
 
 
-    public static void team_build(String player_name, Character[] characters) {
+    public static void team_build(Team team) {
+        String player_name = team.get_team_name();
+        Character[] characters = team.get_team_members();
         // Step 1: Mevcut kadro listesini dinamik olarak oluşturuyoruz
         StringBuilder kadroBuilder = new StringBuilder();
         for (int i = 0; i < characters.length; i++) {
@@ -49,11 +65,11 @@ public class UIManager {
              [ POZİSYON SLOTLARI ]
             
                ( ÖN HAT - Maks 2 Karakter )
-               [ Slot A ] : NO BUFF
-               [ Slot B ] : NO BUFF
+               [ Slot A ] : %s (NO BUFF)
+               [ Slot B ] : %s (NO BUFF)
             
                ( ARKA HAT - Maks 1 Karakter )
-               [ Slot C ] : NO BUFF
+               [ Slot C ] : %s (NO BUFF)
             
             ================================================================================
              Hangi karakteri nerede konumlandırmak istiyorsun?
@@ -92,7 +108,7 @@ public class UIManager {
                 playerName, teamName,
                 activeChar.name, activeChar.ID,activeChar.name,
                 activeChar.current_hp, activeChar.MAX_HP,
-                activeChar.position.str,
+                activeChar.current_position.str,
                 activeChar.current_atk,
                 activeChar.current_def,
                 activeChar.SPEED
