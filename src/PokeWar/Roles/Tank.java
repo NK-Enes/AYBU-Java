@@ -42,6 +42,9 @@ public class Tank extends Character {
     }
 
     @Override
+    public boolean Type_return () {return false;};
+
+    @Override
     public String infoAbility(int skillIndex){
         return switch (skillIndex){
             case 1 -> "TAUNT pozisyonuna geçer.";

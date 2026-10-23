@@ -60,6 +60,9 @@ public class Archer extends Character {
     }
 
     @Override
+    public boolean Type_return () {return false;};
+
+    @Override
     public String infoAbility(int skillIndex){
         return switch (skillIndex){
             case 1 -> "Rakibe kaçamayacağı bir saldırı yapar. (X 0.7-1.5)";
