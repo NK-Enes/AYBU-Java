@@ -31,7 +31,7 @@ public abstract class Character {
         this.ID = ID;
         this.explanation = explanation;
         this.current_position = current_position;
-        this.rechange = new double[] {0, 0, 0, 0}; //Position, hp, def, atk
+        this.rechange = new double[] {-1, 0, 0, 0}; //Position, hp, def, atk
 
         this.hit_change = changes[0];
         this.dodge_change = changes[1];
@@ -122,6 +122,21 @@ public abstract class Character {
         this.rechange_posibilities[index] += value;
     }
 
+    public void Active_relists (){
+        if (this.rechange[0] != -1){
+            this.position_change(Position.numericToPosition((int)(this.rechange[0])),false);
+        }
+        this.current_hp -= this.rechange[1];
+        this.current_def -= this.rechange[2];
+        this.current_atk -= this.rechange[3];
+        this.rechange = new double[]{-1, 0, 0, 0};
+
+        this.hit_change -= this.rechange_posibilities[0];
+        this.dodge_change -= this.rechange_posibilities[1];
+        this.guard_change -= this.rechange_posibilities[2];
+        this.rechange_posibilities = new double[] {0, 0, 0};
+    }
+
     public boolean is_alive (){
         return this.current_hp > 0;
     }
@@ -136,13 +151,20 @@ public abstract class Character {
     }
 
     public double defend (boolean dexterity) {
+        double increase = 0.5;
         if (dexterity){
-            this.setRechange_posibilities_change(1,0.5);
-            this.dodge_change += 0.5;
+            if (this.dodge_change > 0.5){
+                increase = 1 - this.dodge_change;
+            }
+            this.setRechange_posibilities_change(1,increase);
+            this.dodge_change += increase;
             return this.dodge_change;
         } else {
-            this.setRechange_posibilities_change(2,0.5);
-            this.guard_change += 0.5;
+            if (this.guard_change > 0.5){
+                increase = 1 - this.guard_change;
+            }
+            this.setRechange_posibilities_change(2,increase);
+            this.guard_change += increase;
             return this.guard_change;
         }
     }
@@ -151,9 +173,11 @@ public abstract class Character {
 
     public abstract String infoAbility (int skillIndex);
 
+    public abstract boolean Type_return ();
+
     public void guard (double expected_damage,boolean defend) { //todo Add Damage Type
-        if (!defend){ // If Attack CAN'T guard (Real Damage / True Hit)
-            System.out.printf("%s [%s] Guard  %c75 of This Attack (%.1f Damage Taken)\n",this.name,this.ID,'%',expected_damage);
+        if (!defend){ // If Attack CAN'T defend (Real Damage / True Hit)
+            System.out.printf("%s [%s] Guard  %c0 of This Attack (%.1f Damage Taken)\n",this.name,this.ID,'%',expected_damage);
             this.health_change(expected_damage);
             this.dodge_count++;
             this.guard_count++;
