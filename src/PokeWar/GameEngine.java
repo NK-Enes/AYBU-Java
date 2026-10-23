@@ -9,6 +9,7 @@ ettirmelidir.
 */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import PokeWar.Roles.Archer;
@@ -22,9 +23,57 @@ public class GameEngine {
     }
 
     public void StartGame (){
+        Scanner input = new Scanner(System.in);
+        List<Character> characterPool = new ArrayList<>();
+        Collections.addAll(characterPool, this.player_1.get_team_members());
+        Collections.addAll(characterPool, this.player_2.get_team_members());
         while (this.player_1.is_team_valid() && this.player_2.is_team_valid()){
+            String turn_ID = this.initiative[0];
 
+            if (this.initiative != null && this.initiative.length > 1) {
+                // 1. Elemanları 1 birim sola kaydır
+                System.arraycopy(this.initiative, 1, this.initiative, 0, this.initiative.length - 1);
+
+                // 2. İlk elemanı en sona yaz
+                this.initiative[this.initiative.length - 1] = turn_ID;
+            }
+
+            Character character = characterPool.stream()
+                    .filter(c -> c.ID.equals(turn_ID))     // 1. Eşleşme koşulu
+                    .findFirst()                                    // 2. İlk eşleşeni al
+                    .orElse(null);                            // 3. Bulunamazsa null döndür
+            assert character != null;
+            UIManager.printActionMenu(turn_ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
+
+            int user_chose = input.nextInt();
+            if (user_chose == 0){
+                UserCharacterChange(character);
+            } else if (user_chose == 1) {
+                UserAttack(character);
+            } else if (user_chose == 2) {
+                UserDefend(character);
+            } else if (user_chose == 3){
+                UserSkill(character);
+            } else {
+                System.out.print("Geçersiz Girdi");
+            }
         }
+    }
+
+    private void UserAttack (Character character){
+
+    }
+
+    private void UserDefend (Character character){
+
+    }
+
+    private void UserSkill (Character character){
+
+    }
+
+    private void UserCharacterChange (Character character){
+
     }
 
     public void TeamBuilder (){

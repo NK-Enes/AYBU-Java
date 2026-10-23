@@ -8,6 +8,8 @@ public class Main {
         gameEngine.TeamPlacer(1); // German Side Place First
         gameEngine.TeamPlacer(2); // Than Russian Side
         gameEngine.Initiative();
+
+        gameEngine.StartGame();
     }
 
 }
