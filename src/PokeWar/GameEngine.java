@@ -8,12 +8,15 @@ sıra kuyruğu (Turn Queue) oluşturmalıdır. Hızı yüksek olan karakterin ha
 ettirmelidir.
 */
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import PokeWar.Roles.Archer;
 import PokeWar.Roles.Tank;
 
 public class GameEngine {
     Team player_1,player_2;
+    String [] initiative;
     public GameEngine(){
 
     }
@@ -85,5 +88,31 @@ public class GameEngine {
         }
     }
 
+    public void Initiative () {
+        // 1. Adım: Hayatta olan karakterleri bir listede topla
+        List<Character> allCharacters = new ArrayList<>();
+
+        for (Character c : this.player_1.get_team_members()) {
+            if (c.is_alive() && c.current_position != Position.NONE) {
+                allCharacters.add(c);
+            }
+        }
+        for (Character c : this.player_2.get_team_members()) {
+            if (c.is_alive() && c.current_position != Position.NONE) {
+                allCharacters.add(c);
+            }
+        }
+
+        // 2. Adım: SPEED değerine göre büyükten küçüğe sırala
+        allCharacters.sort((c1, c2) -> Double.compare(c2.SPEED, c1.SPEED));
+
+        // 3. Adım: Sıralanan karakterlerin ID'lerini String[] dizisine aktar
+        String[] sortedIDs = new String[allCharacters.size()];
+        for (int i = 0; i < allCharacters.size(); i++) {
+            sortedIDs[i] = allCharacters.get(i).ID;
+        }
+
+        this.initiative = sortedIDs;
+    }
 }
 
