@@ -80,13 +80,13 @@ public class UIManager {
         System.out.printf(template, player_name, kadroBuilder.toString(), slotA, slotB, slotC);
     }
 
-    public static void printActionMenu(String playerName, String teamName, Character activeChar) {
+    public static void printActionMenu(String teamName, Character activeChar) {
         String template = """
         ================================================================================
                                 HAMLE SIRA EKRANI (TUR BİLGİSİ)
         ================================================================================
-         Oyuncu: %s | Takım: %s
-         Sıradaki Karakter: %s [%s]
+         Takım: %s
+         Hamle Sırası: %s [%s]
         --------------------------------------------------------------------------------
          
          [ %s STATLAR ]
@@ -101,11 +101,12 @@ public class UIManager {
           (1) Temel Saldırı (Basic Attack)
           (2) Temel Savunma (Guard Stance)
           (3) Özel Yetenekler (Skills)
+          (0) Karakter Değişikliği
         ================================================================================
         > """;
 
         System.out.printf(template,
-                playerName, teamName,
+                teamName,
                 activeChar.name, activeChar.ID,activeChar.name,
                 activeChar.current_hp, activeChar.MAX_HP,
                 activeChar.current_position.str,
@@ -127,14 +128,15 @@ public class UIManager {
         ================================================================================
          Saldıran: %s [%s] (Mevcut ATK: %.1f)
         --------------------------------------------------------------------------------
-        
+       \s
          [ SEÇİLEBİLİR DÜŞMAN HEDEFLERİ ]
-          (0) ⬅️ GERİ DÖN (Ana Menüye)
+                 (0) ⬅️ GERİ DÖN (Hamle Sıra Ekranı)
+                 \s
         %s--------------------------------------------------------------------------------
          Hangi hedefe saldırmak istiyorsun?
-         (Örn: "1" -> İlk sıradaki hedefi seçer, "0" -> İptal edip ana menüye döner)
+         (Örn: "1" -> İlk sıradaki hedefi seçer, "0" -> İptal edip Hamlı Sıra Ekranı döner)
         --------------------------------------------------------------------------------
-        > """;
+        >\s""";
 
         System.out.printf(template, activeChar.name, activeChar.ID, activeChar.current_atk, targetsBuilder.toString());
     }
