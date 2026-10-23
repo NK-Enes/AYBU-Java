@@ -58,4 +58,13 @@ public enum Position {
 
         return false;
     }
+
+    public static Position numericToPosition (int numeric){
+        for (Position p: Position.values()){
+            if (p.numeric == numeric){
+                return p;
+            }
+        }
+        return Position.NONE;
+    }
 }
