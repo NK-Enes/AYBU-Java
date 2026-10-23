@@ -15,13 +15,12 @@ public class Tank extends Character {
     Position current_position;
     public Tank (String name,String ID){
         super(
-                name,ID,
+                name,ID,"GROUP DEFENCE",Position.NONE,
                 new double[] {200.0,60.0,25.0,15.0},
                 new double[] {200.0,60.0,25.0},
                 Position.FRONT,
                 new double[] {0.5,0.05,0.6}
         );
-        this.current_position = Position.NONE;
     }
 
     public void Skill_1 (Character target, Character[] allies, Character[] enemies){

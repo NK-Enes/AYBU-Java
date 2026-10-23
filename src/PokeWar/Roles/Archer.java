@@ -16,13 +16,12 @@ public class Archer extends Character {
     public Position current_position;
     public Archer (String name,String ID){
         super(
-                name,ID,
+                name,ID,"HIGH DPS",Position.NONE,
                 new double[] {120.00,30.0,45.0,25.0},
                 new double[] {120.0,30.0,45.0},
                 Position.BACK,
                 new double[] {0.6,0.1,0.4}
         );
-        this.current_position = Position.NONE;
     }
 
     public void Skill_1 (Character target, Character[] allies, Character[] enemies){
