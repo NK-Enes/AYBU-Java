@@ -16,10 +16,16 @@ public class Team {
         this.members = members;
     }
 
-    public void change_member_position (String ID,Position target_position){
+    public void change_member_position (String ID,Position target_position,boolean all){
+        if (all){
+            for (Character member: this.members){
+                member.position_change(target_position,false);
+            }
+            return;
+        }
         for (Character member: this.members){
             if (member.ID.equals(ID)){
-                member.position_change(target_position);
+                member.position_change(target_position,false);
                 return;
             }
         }
