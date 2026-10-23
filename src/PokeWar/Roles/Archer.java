@@ -16,7 +16,7 @@ public class Archer extends Character {
     public Position current_position;
     public Archer (String name,String ID){
         super(
-                name,ID,"HIGH DPS",Position.NONE,
+                name,ID,"YUKSEK DPS",Position.NONE,
                 new double[] {120.00,30.0,45.0,25.0},
                 new double[] {120.0,30.0,45.0},
                 Position.BACK,
