@@ -16,6 +16,7 @@ import PokeWar.Roles.Archer;
 import PokeWar.Roles.Tank;
 
 public class GameEngine {
+    Scanner input = new Scanner(System.in);
     Team player_1,player_2;
     String [] initiative;
     public GameEngine(){
@@ -23,7 +24,6 @@ public class GameEngine {
     }
 
     public void StartGame (){
-        Scanner input = new Scanner(System.in);
         List<Character> characterPool = new ArrayList<>();
         Collections.addAll(characterPool, this.player_1.get_team_members());
         Collections.addAll(characterPool, this.player_2.get_team_members());
@@ -38,42 +38,70 @@ public class GameEngine {
                 this.initiative[this.initiative.length - 1] = turn_ID;
             }
 
-            Character character = characterPool.stream()
-                    .filter(c -> c.ID.equals(turn_ID))     // 1. Eşleşme koşulu
-                    .findFirst()                                    // 2. İlk eşleşeni al
-                    .orElse(null);                            // 3. Bulunamazsa null döndür
-            assert character != null;
-            UIManager.printActionMenu(turn_ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
+            boolean done = false;
+            while (!done){ // If action doesn't happen turn back to Action UI
+                Character character = characterPool.stream()
+                        .filter(c -> c.ID.equals(turn_ID))     // 1. Eşleşme koşulu
+                        .findFirst()                                    // 2. İlk eşleşeni al
+                        .orElse(null);                            // 3. Bulunamazsa null döndür
+                assert character != null;
+                UIManager.printActionMenu(turn_ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
 
-            int user_chose = input.nextInt();
-            if (user_chose == 0){
-                UserCharacterChange(character);
-            } else if (user_chose == 1) {
-                UserAttack(character);
-            } else if (user_chose == 2) {
-                UserDefend(character);
-            } else if (user_chose == 3){
-                UserSkill(character);
-            } else {
-                System.out.print("Geçersiz Girdi");
+                int user_chose = input.nextInt();
+                if (user_chose == 0){
+                    done = UserCharacterChange(character);
+                } else if (user_chose == 1) {
+                    done = UserAttack(character);
+                } else if (user_chose == 2) {
+                    done = UserDefend(character);
+                } else if (user_chose == 3){
+                    done = UserSkill(character);
+                } else {
+                    System.out.print("Geçersiz Girdi");
+                }
             }
         }
     }
 
-    private void UserAttack (Character character){
+    private boolean UserAttack (Character character){
+        List <Character> possible_targets = new ArrayList<>();
+        Character[] enemies = switch (character.ID.charAt(0)){
+            case 'A'-> player_2.get_active_team_members();
+            case 'R' -> player_1.get_active_team_members();
+            default -> throw new IllegalStateException("Unexpected value: " + character.ID.indexOf(0));
+        };
+        int[] filled_position = new int[5]; // NONE,FRONT,BACK,FLY,UNDER
+        for (Character c : enemies) filled_position[c.current_position.numeric]++;
+        for (Character c: enemies){
+            if (character.current_position.canAttack(c.current_position,filled_position)){
+                possible_targets.add(c);
+            }
+        }
 
+        UIManager.printBasicAttackTargetMenu(character,possible_targets.toArray(new Character[0]));
+        int user_chose = input.nextInt();
+
+        if (user_chose == 0){
+            return false;
+        } else {
+            double[] result = character.attack();
+            if (result[0] == 1){
+                possible_targets.get(user_chose-1).guard(result[1],true);
+            }
+            return true;
+        }
     }
 
-    private void UserDefend (Character character){
-
+    private boolean UserDefend (Character character){
+        return false;
     }
 
-    private void UserSkill (Character character){
-
+    private boolean UserSkill (Character character){
+        return false;
     }
 
-    private void UserCharacterChange (Character character){
-
+    private boolean UserCharacterChange (Character character){
+        return false;
     }
 
     public void TeamBuilder (){
