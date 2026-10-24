@@ -120,8 +120,12 @@ public class GameEngine {
 
         UIManager.printBanner("Pocket War");
         this.player_1 = new Team(UIManager.get_player_name(true), characters_A);
+        String msg = "%s Ordunuz Sevk Aşamasında\n".formatted(player_1.get_team_name());
+        UIManager.load_UI(msg,3);
         UIManager.printBanner("Pocket War");
         this.player_2 = new Team(UIManager.get_player_name(false), characters_R);
+        msg = "%s  Ordunuz Sevk Aşamasında\n".formatted(player_2.get_team_name());
+        UIManager.load_UI(msg,3);
     }
 
     private void _TeamClear (int index){
@@ -173,6 +177,8 @@ public class GameEngine {
                 }
             }
         }
+        String msg = "%s Ordunuz seferber ediliyor.".formatted(index == 1 ? player_1.get_team_name() : player_2.get_team_name());
+        UIManager.load_UI(msg,3);
     }
 
     public void Initiative () {

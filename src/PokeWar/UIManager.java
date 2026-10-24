@@ -10,6 +10,19 @@ public class UIManager {
         System.out.println("================================================================================\n\n");
     }
 
+    public static void load_UI (String  msg, int loop){
+        System.out.print(msg);
+        for (int i = 0; i < loop; i++){
+            try {Thread.sleep(500);} catch (InterruptedException e) {}
+            if (i % 3 == 2){
+                System.out.print(".\n");
+            } else {
+                System.out.print(".");
+            }
+        }
+        System.out.print("\n");
+    }
+
     public static String get_player_name (boolean first){
         Scanner input = new Scanner(System.in);
         System.out.println("================================================================================");
