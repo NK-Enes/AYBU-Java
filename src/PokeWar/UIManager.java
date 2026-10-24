@@ -36,6 +36,15 @@ public class UIManager {
         return name;
     }
 
+    public static void print_instance_list(String[] text,String[] side_list) {
+        System.out.println("================================================================================");
+        for (int i = 0; i < text.length; i++){
+            System.out.printf("%d - (%s) %s\n",i+1,side_list[i],text[i]);
+        }
+
+        System.out.println("================================================================================\n\n");
+    }
+
 
     public static void team_build(Team team) {
         String player_name = team.get_team_name();
@@ -114,6 +123,7 @@ public class UIManager {
           (1) Temel Saldırı (Basic Attack)
           (2) Temel Savunma (Guard Stance)
           (3) Özel Yetenekler (Skills)
+          (4) Initiative List (Queue)
           (0) Karakter Değişikliği
         ================================================================================
         > """;
