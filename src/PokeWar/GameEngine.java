@@ -19,17 +19,23 @@ public class GameEngine {
     Scanner input = new Scanner(System.in);
     Team player_1,player_2;
     String [] initiative;
+
     public GameEngine(){
 
     }
 
-    public void StartGame (){
+    private Character id_to_character (String id, boolean move){
         List<Character> characterPool = new ArrayList<>();
         Collections.addAll(characterPool, this.player_1.get_team_members());
         Collections.addAll(characterPool, this.player_2.get_team_members());
-        while (this.player_1.is_team_valid() && this.player_2.is_team_valid()){
-            String turn_ID = this.initiative[0];
 
+        String turn_ID;
+        if (!id.isEmpty()){
+            turn_ID = id;
+        } else {
+            turn_ID = this.initiative[0];
+        }
+        if (move){
             if (this.initiative != null && this.initiative.length > 1) {
                 // 1. Elemanları 1 birim sola kaydır
                 System.arraycopy(this.initiative, 1, this.initiative, 0, this.initiative.length - 1);
@@ -37,16 +43,22 @@ public class GameEngine {
                 // 2. İlk elemanı en sona yaz
                 this.initiative[this.initiative.length - 1] = turn_ID;
             }
+        }
+        Character character = characterPool.stream()
+                .filter(c -> c.ID.equals(turn_ID))     // 1. Eşleşme koşulu
+                .findFirst()                                    // 2. İlk eşleşeni al
+                .orElse(null);                            // 3. Bulunamazsa null döndür
+        assert character != null;
+        return character;
+    }
 
+    public void StartGame (){
+        while (this.player_1.is_team_valid() && this.player_2.is_team_valid()){
             boolean done = false;
             while (!done){ // If action doesn't happen turn back to Action UI
-                Character character = characterPool.stream()
-                        .filter(c -> c.ID.equals(turn_ID))     // 1. Eşleşme koşulu
-                        .findFirst()                                    // 2. İlk eşleşeni al
-                        .orElse(null);                            // 3. Bulunamazsa null döndür
-                assert character != null;
+                Character character = this.id_to_character("",true);
                 character.Active_relists();
-                UIManager.printActionMenu(turn_ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
+                UIManager.printActionMenu(character.ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
 
                 int user_chose = input.nextInt();
                 if (user_chose == 0){
@@ -57,6 +69,9 @@ public class GameEngine {
                     done = UserDefend(character);
                 } else if (user_chose == 3){
                     done = UserSkill(character);
+                } else if (user_chose == 4){
+                    Initiative_Show();
+                    try {Thread.sleep(1500);} catch (InterruptedException e) {}
                 } else {
                     System.out.print("Geçersiz Girdi");
                 }
@@ -112,6 +127,17 @@ public class GameEngine {
 
     private boolean UserCharacterChange (Character character){
         return false;
+    }
+
+    public void Initiative_Show (){
+        List<String> character_name = new ArrayList<>();
+        List<String> character_side = new ArrayList<>();
+        for (String id: this.initiative){
+            Character character = this.id_to_character(id,false);
+            character_name.add(character.name);
+            character_side.add(character.ID.startsWith("A") ? player_1.get_team_name() : player_2.get_team_name());
+        }
+        UIManager.print_instance_list(character_name.toArray(String[]::new),character_side.toArray(String[]::new));
     }
 
     public void TeamBuilder (){
