@@ -60,7 +60,7 @@ public abstract class Character {
         HP: %.2f/%.2f
         DEF: %.2f/%.2f
         ATK: %.2f/%.2f
-        Stats [DEALT: %.2f\t SUSTAINED: %.2f]""".formatted(
+        Stats [DEALT: %.2f\t SUSTAINED: %.2f]\n""".formatted(
                 name, ID, current_position.str,
                 '%', hit_change*100,
                 '%', dodge_change*100,
