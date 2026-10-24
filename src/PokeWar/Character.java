@@ -151,16 +151,16 @@ public abstract class Character {
     }
 
     public double defend (boolean dexterity) {
-        double increase = 0.5;
+        double increase = 0.3;
         if (dexterity){
-            if (this.dodge_change > 0.5){
+            if (this.dodge_change > increase){
                 increase = 1 - this.dodge_change;
             }
             this.setRechange_posibilities_change(1,increase);
             this.dodge_change += increase;
             return this.dodge_change;
         } else {
-            if (this.guard_change > 0.5){
+            if (this.guard_change > increase){
                 increase = 1 - this.guard_change;
             }
             this.setRechange_posibilities_change(2,increase);

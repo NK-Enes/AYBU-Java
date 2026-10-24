@@ -90,7 +90,7 @@ public class GameEngine {
             if (result[0] == 1){
                 possible_targets.get(user_chose-1).guard(result[1],true);
             } else {
-                System.out.printf("%s [%s] Missed Attack",character.name,character.ID);
+                System.out.printf("%s [%s] Missed Attack\n",character.name,character.ID);
             }
             return true;
         }
