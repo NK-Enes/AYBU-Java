@@ -6,7 +6,8 @@ public enum Position {
     BACK("BACK",1,2),
     TAUNTER("TAUNTER",3,3),
     FLY("FLY",0,4),
-    UNDER("UNDER", 0,5);
+    UNDER("UNDER", 0,5),
+    DEAD("DEAD",100,6);
 
     public final int capacity;
     public final int numeric;
@@ -15,13 +16,14 @@ public enum Position {
     // Saldırı Matrisi: [Saldıranın_Pozisyonu][Hedefin_Pozisyonu]
     // 0: Saldıramaz | 1: Koşulsuz Saldırır | -1: Koşullu Saldırır
     private static final int[][] ATTACK_MATRIX = {
-            //                NONE  FRONT  BACK  TAUNTER   FLY  UNDER
-            /* NONE    */ {    0,     0,    0,     0,      0,     0  },
-            /* FRONT   */ {    0,     1,   -1,     1,      0,     0  },
-            /* BACK    */ {    0,     1,    1,     1,      0,     0  },
-            /* TAUNTER */ {    0,     1,   -1,     1,      0,     0  },
-            /* FLY     */ {    0,     1,    1,     1,      1,     0  },
-            /* UNDER   */ {    0,     1,    1,     1,      0,     1  }
+            //                NONE  FRONT  BACK  TAUNTER   FLY  UNDER DEAD
+            /* NONE    */ {    0,     0,    0,     0,      0,     0,    0  },
+            /* FRONT   */ {    0,     1,   -1,     1,      0,     0,    0  },
+            /* BACK    */ {    0,     1,    1,     1,      0,     0,    0  },
+            /* TAUNTER */ {    0,     1,   -1,     1,      0,     0,    0  },
+            /* FLY     */ {    0,     1,    1,     1,      1,     0,    0  },
+            /* UNDER   */ {    0,     1,    1,     1,      0,     1,    0  },
+            /* DEAD    */ {    0,     0,    0,     0,      0,     0,    0  },
     };
 
     Position(String str,int capacity,int numeric){
@@ -30,6 +32,14 @@ public enum Position {
         this.numeric = numeric;
     }
 
+    public boolean isIn (Position[] positions){
+        for (Position p: positions){
+            if (this.numeric == p.numeric){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean canAttack(Position target_position, int[] filled_positions) {
         int rule = ATTACK_MATRIX[this.numeric][target_position.numeric];
