@@ -122,7 +122,46 @@ public class GameEngine {
     }
 
     private boolean UserSkill (Character character){
-        return false;
+        UIManager.printSkillMenu(character, 3);
+        boolean done;
+        int user_choice = input.nextInt();
+        if (user_choice == 0 || user_choice > 3){return false;} // Turn back
+
+        List <Character> possible_targets = new ArrayList<>();
+        Character[] enemies = switch (character.ID.charAt(0)){
+            case 'A'-> player_1.get_active_team_members();
+            case 'R' -> player_2.get_active_team_members();
+            default -> throw new IllegalStateException("Unexpected value: " + character.ID.indexOf(0));
+        };
+        Character [] allies = switch (character.ID.charAt(0)){
+            case 'A' -> player_2.get_active_team_members();
+            case 'R' -> player_1.get_active_team_members();
+            default -> throw new IllegalStateException("Unexpected value: " + character.ID.indexOf(0));
+        };
+
+        if (character.get_target(user_choice) == 1){ // Attack Skill
+            int[] filled_position = new int[5]; // NONE,FRONT,BACK,FLY,UNDER
+            for (Character c : enemies) filled_position[c.current_position.numeric]++;
+            for (Character c: enemies){
+                if (character.current_position.canAttack(c.current_position,filled_position)){
+                    possible_targets.add(c);
+                }
+            }
+        } else if (character.get_target(user_choice) == -1){ // Buff | Heal Skill
+            System.out.print("COMING SOON"); //Now we just pass allies
+            for (Character c: allies){
+                possible_targets.add(c);
+            }
+        } else { // Non Target Skill
+            done = character.useAbility(user_choice,character,enemies,allies); //target himself (Ability Don't use it anyway)
+            return done;
+        }
+
+        UIManager.printSkillTargetMenu(character,user_choice,possible_targets.toArray(new Character[0]));
+        int target_index = input.nextInt();
+        Character target = possible_targets.get(target_index-1);
+        done = character.useAbility(user_choice,target,enemies,allies);
+        return done;
     }
 
     private boolean UserCharacterChange (Character character){
@@ -146,11 +185,11 @@ public class GameEngine {
 
         UIManager.printBanner("Pocket War");
         this.player_1 = new Team(UIManager.get_player_name(true), characters_A);
-        String msg = "%s Ordunuz Sevk Aşamasında\n".formatted(player_1.get_team_name());
+        String msg = "%s Ordunuz Sevk Aşamasında ".formatted(player_1.get_team_name());
         UIManager.load_UI(msg,3);
         UIManager.printBanner("Pocket War");
         this.player_2 = new Team(UIManager.get_player_name(false), characters_R);
-        msg = "%s  Ordunuz Sevk Aşamasında\n".formatted(player_2.get_team_name());
+        msg = "%s  Ordunuz Sevk Aşamasında ".formatted(player_2.get_team_name());
         UIManager.load_UI(msg,3);
     }
 
