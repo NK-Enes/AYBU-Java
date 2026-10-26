@@ -15,8 +15,8 @@ public class Tank extends Character {
     public Tank (String name,String ID){
         super(
                 name,ID,"GRUP DEFANS",Position.NONE,
-                new double[] {200.0,60.0,25.0,15.0},
-                new double[] {200.0,60.0,25.0},
+                new double[] {200.0,80.0,50.0,15.0},
+                new double[] {200.0,40.0,15.0},
                 Position.FRONT,
                 new double[] {0.5,0.05,0.6}
         );
@@ -33,15 +33,15 @@ public class Tank extends Character {
         // Group Buff
         for (Character ally : allies) {
             System.out.printf("%s's Defence Stat +%c20\n",ally.name,'%');
-            ally.rechange_change(2,this.current_def * 0.2);
-            ally.buff(new double[]{0, this.current_def * 0.2, 0}); // %20 defence buff
+            ally.buff(new double[]{0, this.current_def * 0.1, 0}); // %10 defence buff permanent
         }
         return true;
     }
     public boolean Skill_3 (Character target, Character[] allies, Character[] enemies){
         // Defence to Attack buff
         System.out.printf("%s's Attack Value Increased %.2f\n",this.name,this.current_def);
-        this.current_atk += this.current_def;
+        this.current_atk += this.current_def * 0.25; // 0.25 of defense to attack
+        this.current_def *= 0.875; // But lose 0.125 of defence
         return true;
     }
 

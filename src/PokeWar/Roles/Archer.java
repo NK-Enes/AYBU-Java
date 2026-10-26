@@ -16,8 +16,8 @@ public class Archer extends Character {
     public Archer (String name,String ID){
         super(
                 name,ID,"YUKSEK DPS",Position.NONE,
-                new double[] {120.00,30.0,45.0,25.0},
-                new double[] {120.0,30.0,45.0},
+                new double[] {120.00,40.0,80.0,25.0},
+                new double[] {120.0,20.0,30.0},
                 Position.BACK,
                 new double[] {0.6,0.1,0.4}
         );
@@ -39,29 +39,54 @@ public class Archer extends Character {
         }
         return true;
     }
-    public boolean Skill_3 (Character target, Character[] allies, Character[] enemies){
+    public boolean Skill_3(Character target, Character[] allies, Character[] enemies) {
         // Multi Shot On An Enemy
+        double shot_chance, multiple, combo_multiplier, shot_happen;
+
         Random random = new Random();
         boolean is_shot = true;
-        double expected_damage = 0;
+        double expected_damages = 0;
+        double realize_damages = 0;
         int combo = 0;
-        double shot_change;
-        double multiple;
-        double shot_happen;
-        while(is_shot){
-            shot_change = 1 - (0.05 * combo);
-            combo++;
+
+        while (is_shot) {
+            shot_chance = 1.0 - (0.05 * combo);
             shot_happen = random.nextDouble();
-            if (shot_happen >= (1 - shot_change)){
-                System.out.printf("%s's Combo is NOW %d\n",this.name,combo);
-                multiple = random.nextDouble(0.5,1.5);
-                expected_damage += this.current_atk * (multiple + (combo * 0.1));
+
+            if (shot_happen < shot_chance) {
+
+                // 0 -> 0.15 | 1 -> 0.1875 | 2 -> 0.225 | 3 -> 0.2625 | 4 -> 0.30
+                if (combo <= 4) {
+                    combo_multiplier = 0.15 + (combo * 0.0375);
+                }
+                // 4 -> 0.30 | 5 -> 0.367 | 6 -> 0.433 | 7 -> 0.50
+                else if (combo <= 7) {
+                    combo_multiplier = 0.30 + (combo - 4) * (0.20 / 3.0);
+                }
+                // 7 -> 0.50 | 8 -> 0.833 | 9 -> 1.167 | 10 -> 1.50
+                else if (combo <= 10) {
+                    combo_multiplier = 0.50 + (combo - 7) * (1.00 / 3.0);
+                }
+                // 10 -> 1.50 | 15 -> 3.25 | 20 -> 5.00
+                else {
+                    combo_multiplier = 1.50 + (combo - 10) * (3.50 / 10.0);
+                }
+
+                multiple = random.nextDouble(0.5, 1.5);
+
+                double raw_damage = this.current_atk * (multiple + combo_multiplier);
+                expected_damages += raw_damage;
+                realize_damages += target.guard(raw_damage, true);
+
+                combo++;
+                System.out.printf("%s's Combo is NOW %d\n", this.name, combo);
+
             } else {
                 is_shot = false;
             }
         }
-        System.out.printf("TOTAL Combo: %d Expected Damage: %.2f\n",combo,expected_damage);
-        target.guard(expected_damage,true);
+
+        System.out.printf("TOTAL Combo: %d | Expected Damage: %.2f | Taken Damage: %.2f\n",combo, expected_damages, realize_damages);
         return true;
     }
 

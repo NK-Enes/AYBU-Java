@@ -194,14 +194,14 @@ public abstract class Character {
         }
     }
 
-    public void guard (double expected_damage,boolean defend) { //todo Add Damage Type
+    public double guard (double expected_damage,boolean defend) { //todo Add Damage Type
         if (!defend){ // If Attack CAN'T defend (Real Damage / True Hit)
             System.out.printf("%s [%s] Guard  %c0 of This Attack (%.1f Damage Taken)\n",this.name,this.ID,'%',expected_damage);
             this.health_change(-1 * expected_damage);
             this.dodge_count = 0;
             this.guard_count = 0;
             DIE();
-            return;
+            return -1 * expected_damage;
         }
         double dodge_happen = random.nextDouble();
         if (dodge_happen >= (1-this.dodge_change)){
@@ -209,27 +209,32 @@ public abstract class Character {
             System.out.printf("%s [%s] Dodged This Attack (0 Damage Taken)\n",this.name,this.ID);
             this.dodge_count ++;
             DIE();
-            return;
+            return 0;
         }
         this.dodge_count = 0;
         double guard_happen = random.nextDouble();
         if (guard_happen >= (1-this.guard_change)){
             // %75 Absorb
             System.out.printf("%s [%s] Guard  %c75 of This Attack (%.1f Damage Taken)\n",this.name,this.ID,'%',expected_damage*0.25);
-            this.health_change(-0.25 * expected_damage);
+            this.health_change((1-this.current_def*0.1) * -0.25 * expected_damage);
             this.guard_count ++;
+            DIE();
+            return (1-this.current_def*0.1) * -0.25 * expected_damage;
         } else if (guard_happen >= (1-this.guard_change/2)) {
             // %50 Absorb
             System.out.printf("%s [%s] Guard  %c50 of This Attack (%.1f Damage Taken)\n",this.name,this.ID,'%',expected_damage*0.5);
-            this.health_change(-0.5 * expected_damage);
+            this.health_change((1-this.current_def*0.1) * -0.5 * expected_damage);
             this.guard_count ++;
+            DIE();
+            return (1-this.current_def*0.1) * -0.5 * expected_damage;
         } else {
             // %0 Absorb
             System.out.printf("%s [%s] Can't Guard of This Attack (%.1f Damage Taken)\n",this.name,this.ID,expected_damage);
-            this.health_change(-1 * expected_damage);
+            this.health_change((1-this.current_def*0.1) * -1 * expected_damage);
             this.guard_count = 0; // Count down to zero
+            DIE();
+            return (1-this.current_def*0.1) * -1 * expected_damage;
         }
-        DIE();
     }
 
 }
