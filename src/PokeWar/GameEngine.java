@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import PokeWar.Roles.Archer;
+import PokeWar.Roles.Healer;
 import PokeWar.Roles.Tank;
 
 public class GameEngine {
@@ -68,6 +69,7 @@ public class GameEngine {
             character = this.id_to_character("",true);
             while (!done && character.is_alive() && character.on_Area()){ // If action doesn't happen turn back to Action UI
                 character.Active_relists();
+                character.tick();
                 UIManager.printActionMenu(character.ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
 
                 int user_chose = input.nextInt();
@@ -170,6 +172,7 @@ public class GameEngine {
 
         UIManager.printSkillTargetMenu(character,user_choice,possible_targets.toArray(new Character[0]));
         int target_index = input.nextInt();
+        if (target_index == 0) {return false;}
         Character target = possible_targets.get(target_index-1);
         done = character.useAbility(user_choice,target,enemies,allies);
         return done;
@@ -204,8 +207,14 @@ public class GameEngine {
     }
 
     public void TeamBuilder (){
-        Character[] characters_A = new Character[] {new Tank("Panzerkönig", "AT-1"),new Archer("Scharfschütze","AA-1")};
-        Character[] characters_R = new Character[] {new Tank("Bronenosets", "RT-1"), new Archer("Sneznyj Bars", "RA-1")};
+        Character[] characters_A = new Character[] {
+                new Tank("Panzerkönig", "AT-1"),
+                new Archer("Scharfschütze","AA-1"),
+                new Healer("Heilmeister","AH-1")};
+        Character[] characters_R = new Character[] {
+                new Tank("Bronenosets", "RT-1"),
+                new Archer("Sneznyj Bars", "RA-1"),
+                new Healer("Tselitel  ","RH-1")};
 
         UIManager.printBanner("Pocket War");
         this.player_1 = new Team(UIManager.get_player_name(true), characters_A);
