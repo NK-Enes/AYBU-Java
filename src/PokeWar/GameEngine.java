@@ -24,45 +24,55 @@ public class GameEngine {
 
     }
 
-    private Character id_to_character (String id, boolean move){
+    private Character id_to_character(String id, boolean move) {
+        if (this.initiative == null || this.initiative.length == 0) {
+            throw new IllegalStateException("Initiative array is null or empty!");
+        }
         List<Character> characterPool = new ArrayList<>();
         Collections.addAll(characterPool, this.player_1.get_team_members());
         Collections.addAll(characterPool, this.player_2.get_team_members());
 
         String turn_ID;
-        if (!id.isEmpty()){
+        if (id != null && !id.isEmpty()){
             turn_ID = id;
         } else {
             turn_ID = this.initiative[0];
         }
-        if (move){
-            if (this.initiative != null && this.initiative.length > 1) {
-                // 1. Elemanları 1 birim sola kaydır
+        if (move) {
+            if (this.initiative.length > 1) {
+                // Elemanları 1 birim sola kaydır (- işareti eklendi)
                 System.arraycopy(this.initiative, 1, this.initiative, 0, this.initiative.length - 1);
 
-                // 2. İlk elemanı en sona yaz
+                // Belirlenen turn_ID'yi en sona yaz (- işareti eklendi)
                 this.initiative[this.initiative.length - 1] = turn_ID;
             }
         }
         Character character = characterPool.stream()
-                .filter(c -> c.ID.equals(turn_ID))     // 1. Eşleşme koşulu
-                .findFirst()                                    // 2. İlk eşleşeni al
-                .orElse(null);                            // 3. Bulunamazsa null döndür
-        assert character != null;
+                .filter(c -> c.ID.equals(turn_ID))
+                .findFirst()
+                .orElse(null);
+
+        // Assert yerine güvenli kontrol
+        if (character == null) {
+            throw new IllegalArgumentException("Character with ID '" + turn_ID + "' not found in character pool!");
+        }
+
         return character;
     }
 
     public void StartGame (){
-        while (this.player_1.is_team_valid() && this.player_2.is_team_valid()){
-            boolean done = false;
-            while (!done){ // If action doesn't happen turn back to Action UI
-                Character character = this.id_to_character("",true);
+        boolean done;
+        Character character;
+        while (this.player_1.is_team_valid()[0] && this.player_2.is_team_valid()[0]){
+            done = false;
+            character = this.id_to_character("",true);
+            while (!done && character.is_alive() && character.on_Area()){ // If action doesn't happen turn back to Action UI
                 character.Active_relists();
                 UIManager.printActionMenu(character.ID.startsWith("A") ? this.player_1.get_team_name() : this.player_2.get_team_name(),character);
 
                 int user_chose = input.nextInt();
                 if (user_chose == 0){
-                    done = UserCharacterChange(character);
+                    done = UserCharacterChange(0, character);
                 } else if (user_chose == 1) {
                     done = UserAttack(character);
                 } else if (user_chose == 2) {
@@ -70,13 +80,14 @@ public class GameEngine {
                 } else if (user_chose == 3){
                     done = UserSkill(character);
                 } else if (user_chose == 4){
-                    Initiative_Show();
+                    done = Initiative_Show();
                     try {Thread.sleep(1500);} catch (InterruptedException e) {}
                 } else {
                     System.out.print("Geçersiz Girdi");
                 }
             }
             try {Thread.sleep(1500);} catch (InterruptedException e) {}
+            // DEAD CHECK and if True turn User Place POKE
         }
     }
 
@@ -129,13 +140,13 @@ public class GameEngine {
 
         List <Character> possible_targets = new ArrayList<>();
         Character[] enemies = switch (character.ID.charAt(0)){
-            case 'A'-> player_1.get_active_team_members();
-            case 'R' -> player_2.get_active_team_members();
+            case 'A'-> player_2.get_active_team_members();
+            case 'R' -> player_1.get_active_team_members();
             default -> throw new IllegalStateException("Unexpected value: " + character.ID.indexOf(0));
         };
         Character [] allies = switch (character.ID.charAt(0)){
-            case 'A' -> player_2.get_active_team_members();
-            case 'R' -> player_1.get_active_team_members();
+            case 'A' -> player_1.get_active_team_members();
+            case 'R' -> player_2.get_active_team_members();
             default -> throw new IllegalStateException("Unexpected value: " + character.ID.indexOf(0));
         };
 
@@ -153,7 +164,7 @@ public class GameEngine {
                 possible_targets.add(c);
             }
         } else { // Non Target Skill
-            done = character.useAbility(user_choice,character,enemies,allies); //target himself (Ability Don't use it anyway)
+            done = character.useAbility(user_choice,character,allies,enemies); //target himself (Ability Don't use it anyway)
             return done;
         }
 
@@ -164,28 +175,32 @@ public class GameEngine {
         return done;
     }
 
-    private boolean UserCharacterChange (Character character){
+    private boolean UserCharacterChange (int mod, Character character){
         return false;
     }
 
-    public void Initiative_Show (){
+    public boolean Initiative_Show (){
         List<String> character_name = new ArrayList<>();
         List<String> character_side = new ArrayList<>();
         List<Double> character_hp = new ArrayList<>();
         List<Double> character_atk = new ArrayList<>();
+        List<Double> character_def = new ArrayList<>();
         for (String id: this.initiative){
             Character character = this.id_to_character(id,false);
             character_name.add(character.name);
             character_side.add(character.ID.startsWith("A") ? player_1.get_team_name() : player_2.get_team_name());
             character_hp.add(character.current_hp);
             character_atk.add(character.current_atk);
+            character_def.add(character.current_def);
         }
         UIManager.print_instance_list(
                 character_name.toArray(String[]::new),
                 character_side.toArray(String[]::new),
                 character_hp.stream().mapToDouble(Double::doubleValue).toArray(),
-                character_atk.stream().mapToDouble(Double::doubleValue).toArray()
+                character_atk.stream().mapToDouble(Double::doubleValue).toArray(),
+                character_def.stream().mapToDouble(Double::doubleValue).toArray()
         );
+        return false; // Not an Action
     }
 
     public void TeamBuilder (){
@@ -260,12 +275,12 @@ public class GameEngine {
         List<Character> allCharacters = new ArrayList<>();
 
         for (Character c : this.player_1.get_team_members()) {
-            if (c.is_alive() && c.current_position != Position.NONE) {
+            if (c.is_alive() && c.on_Area()) {
                 allCharacters.add(c);
             }
         }
         for (Character c : this.player_2.get_team_members()) {
-            if (c.is_alive() && c.current_position != Position.NONE) {
+            if (c.is_alive() && c.on_Area()) {
                 allCharacters.add(c);
             }
         }
