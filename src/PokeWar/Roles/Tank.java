@@ -23,26 +23,51 @@ public class Tank extends Character {
         );
     }
 
-    public void Skill_1 (Character target, Character[] allies, Character[] enemies){
+    public boolean Skill_1 (Character target, Character[] allies, Character[] enemies){
         // Taunt Skill
+        System.out.printf("%s's Position Change to TAUNT\n",this.name);
         this.rechange[0] = this.current_position.numeric;
         this.current_position = Position.TAUNTER;
+        return true;
     }
-    public void Skill_2 (Character target, Character[] allies, Character[] enemies){
+    public boolean Skill_2 (Character target, Character[] allies, Character[] enemies){
         // Group Buff
         for (Character ally : allies) {
+            System.out.printf("%s's Defence Stat +%c20\n",ally.name,'%');
             ally.rechange_change(2,this.current_def * 0.2);
             ally.buff(new double[]{0, this.current_def * 0.2, 0}); // %20 defence buff
         }
+        return true;
     }
-    public void Skill_3 (Character target, Character[] allies, Character[] enemies){
+    public boolean Skill_3 (Character target, Character[] allies, Character[] enemies){
         // Defence to Attack buff
+        System.out.printf("%s's Attack Value Increased %.2f\n",this.name,this.current_def);
         this.current_atk += this.current_def;
-        this.rechange_change(3,this.current_def);
+        return true;
     }
 
     @Override
     public boolean Type_return () {return false;};
+
+    @Override
+    public String getSkillName(int skillIndex) {
+        switch (skillIndex) {
+            case 1: return "TAUNT";
+            case 2: return "KALKANLAR";
+            case 3: return "KÜKRE";
+            default: return "Bilinmeyen Yetenek";
+        }
+    }
+
+    @Override
+    public int get_target (int skillIndex) {
+        switch (skillIndex) {
+            case 1: return 0;
+            case 2: return 0;
+            case 3: return 0;
+            default: return 0;
+        }
+    }
 
     @Override
     public String infoAbility(int skillIndex){
@@ -55,12 +80,23 @@ public class Tank extends Character {
     }
 
     @Override
-    public void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies) {
+    public boolean useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies) {
+        boolean done = false;
+        System.out.printf("%d useAbility",skillIndex);
         switch (skillIndex) {
-            case 1 -> Skill_1(target,allies,enemies);
-            case 2 -> Skill_2(target,allies,enemies);
-            case 3 -> Skill_3(target,allies,enemies);
-            default -> System.out.println("Geçersiz yetenek!");
+            case 1 :
+                done = Skill_1(target,allies,enemies);
+                break;
+            case 2 :
+                done = Skill_2(target,allies,enemies);
+                break;
+            case 3 :
+                done = Skill_3(target,allies,enemies);
+                break;
+            default :
+                System.out.println("Geçersiz yetenek!");
+                break;
         }
+        return done;
     }
 }
