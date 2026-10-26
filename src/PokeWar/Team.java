@@ -34,13 +34,18 @@ public class Team {
         }
     }
 
-    public boolean is_team_valid (){
+    public boolean[] is_team_valid (){
+        boolean valid = false;
+        boolean on_arena = false;
         for (Character member : this.members){
             if (member.is_alive()){
-                return true;
+                valid = true;
+            }
+            if (member.on_Area()){
+                on_arena = true;
             }
         }
-        return false;
+        return new boolean[] {valid,on_arena};
     }
 
     public String get_team_name (){
