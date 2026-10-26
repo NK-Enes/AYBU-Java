@@ -22,6 +22,10 @@ public class Tank extends Character {
         );
     }
 
+    public void tick (){
+
+    }
+
     public boolean Skill_1 (Character target, Character[] allies, Character[] enemies){
         // Taunt Skill
         System.out.printf("%s's Position Change to TAUNT\n",this.name);
@@ -39,7 +43,7 @@ public class Tank extends Character {
     }
     public boolean Skill_3 (Character target, Character[] allies, Character[] enemies){
         // Defence to Attack buff
-        System.out.printf("%s's Attack Value Increased %.2f\n",this.name,this.current_def);
+        System.out.printf("%s's Attack Value Increased %.2f (-%.2f DEF)\n",this.name,this.current_def* 0.25,this.current_def*0.125);
         this.current_atk += this.current_def * 0.25; // 0.25 of defense to attack
         this.current_def *= 0.875; // But lose 0.125 of defence
         return true;

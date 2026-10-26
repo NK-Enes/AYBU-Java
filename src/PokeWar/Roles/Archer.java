@@ -23,6 +23,10 @@ public class Archer extends Character {
         );
     }
 
+    public void tick (){
+
+    }
+
     public boolean Skill_1 (Character target, Character[] allies, Character[] enemies){
         // Sniper Shot
         Random random = new Random();
@@ -41,7 +45,7 @@ public class Archer extends Character {
     }
     public boolean Skill_3(Character target, Character[] allies, Character[] enemies) {
         // Multi Shot On An Enemy
-        double shot_chance, multiple, combo_multiplier, shot_happen;
+        double shot_chance, multiple, combo_multiplier, shot_happen, raw_damage;
 
         Random random = new Random();
         boolean is_shot = true;
@@ -74,9 +78,9 @@ public class Archer extends Character {
 
                 multiple = random.nextDouble(0.5, 1.5);
 
-                double raw_damage = this.current_atk * (multiple + combo_multiplier);
+                raw_damage = this.current_atk * (multiple + combo_multiplier);
                 expected_damages += raw_damage;
-                realize_damages += target.guard(raw_damage, true);
+                realize_damages -= target.guard(raw_damage, true); // because its negative
 
                 combo++;
                 System.out.printf("%s's Combo is NOW %d\n", this.name, combo);
