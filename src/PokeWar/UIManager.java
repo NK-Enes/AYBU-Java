@@ -164,35 +164,36 @@ public class UIManager {
         System.out.printf(template, activeChar.name, activeChar.ID, activeChar.current_atk, targetsBuilder.toString());
     }
 
-    public static void printSkillMenu(Character activeChar, Method[] skills) {
+    public static void printSkillMenu(Character activeChar, int skill_lenght) {
         StringBuilder skillListBuilder = new StringBuilder();
-        for (int i = 0; i < skills.length; i++) {
-            skillListBuilder.append(String.format("          (%d) %-25s : %s%n",
-                    i + 1, skills[i].getName(), activeChar.infoAbility(i+1)));
+        for (int i = 0; i < skill_lenght; i++) {
+            skillListBuilder.append(String.format("  (%d) %-25s : %s%n",
+                    i + 1, activeChar.getSkillName(i + 1), activeChar.infoAbility(i + 1)));
         }
 
         String template = """
-        ================================================================================
-                              ÖZEL YETENEK SEÇİMİ (SKILLS)
-        ================================================================================
-         Karakter: %s [%s]
-        --------------------------------------------------------------------------------
-        
-         [ KULLANILABİLİR YETENEKLER ]
-          (0) ⬅️ GERİ DÖN (Ana Menüye)
-        %s--------------------------------------------------------------------------------
-         Kullanmak istediğin yeteneği seç:
-         (Örn: "1" -> 1. Yeteneği seçer, "0" -> İptal edip ana menüye döner)
-        --------------------------------------------------------------------------------
-        > """;
+    ================================================================================
+                          ÖZEL YETENEK SEÇİMİ (SKILLS)
+    ================================================================================
+     Karakter: %s [%s]
+    --------------------------------------------------------------------------------
+    
+     [ KULLANILABİLİR YETENEKLER ]
+      (0) ⬅️ GERİ DÖN (Ana Menüye)
+    %s--------------------------------------------------------------------------------
+     Kullanmak istediğin yeteneği seç:
+     (Örn: "1" -> 1. Yeteneği seçer, "0" -> İptal edip ana menüye döner)
+    --------------------------------------------------------------------------------
+    > """;
 
         System.out.printf(template, activeChar.name, activeChar.ID, skillListBuilder.toString());
     }
 
-    public static void printSkillTargetMenu(Method selectedSkill, Character[] possibleTargets) {
+    public static void printSkillTargetMenu(Character character,int skill_index, Character[] possibleTargets) {
+        System.out.print("Skill Index: " + skill_index + "\n");
         StringBuilder targetsBuilder = new StringBuilder();
         for (int i = 0; i < possibleTargets.length; i++) {
-            targetsBuilder.append(String.format("          (%d) %s%n", i + 1, possibleTargets[i].toShortString()));
+            targetsBuilder.append(String.format("  (%d) %s%n", i + 1, possibleTargets[i].toShortString()));
         }
 
         String template = """
@@ -210,6 +211,6 @@ public class UIManager {
         --------------------------------------------------------------------------------
         > """;
 
-        System.out.printf(template, selectedSkill.getName(), targetsBuilder.toString());
+        System.out.printf(template, character.infoAbility(skill_index), targetsBuilder.toString());
     }
 }
