@@ -138,7 +138,16 @@ public abstract class Character {
     }
 
     public boolean is_alive (){
-        return this.current_hp > 0;
+        if (this.current_hp <= 0){
+            DIE();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean on_Area (){
+        return !this.current_position.isIn(new Position[]{Position.NONE, Position.DEAD});
     }
 
     public double[] attack (){
@@ -179,12 +188,19 @@ public abstract class Character {
 
     public abstract boolean Type_return ();
 
+    private void DIE (){
+        if (this.current_hp <= 0){
+            this.current_position = Position.DEAD; // Move to Out of Battle
+        }
+    }
+
     public void guard (double expected_damage,boolean defend) { //todo Add Damage Type
         if (!defend){ // If Attack CAN'T defend (Real Damage / True Hit)
             System.out.printf("%s [%s] Guard  %c0 of This Attack (%.1f Damage Taken)\n",this.name,this.ID,'%',expected_damage);
             this.health_change(-1 * expected_damage);
             this.dodge_count = 0;
             this.guard_count = 0;
+            DIE();
             return;
         }
         double dodge_happen = random.nextDouble();
@@ -192,6 +208,7 @@ public abstract class Character {
             // Total Dodge
             System.out.printf("%s [%s] Dodged This Attack (0 Damage Taken)\n",this.name,this.ID);
             this.dodge_count ++;
+            DIE();
             return;
         }
         this.dodge_count = 0;
@@ -212,6 +229,7 @@ public abstract class Character {
             this.health_change(-1 * expected_damage);
             this.guard_count = 0; // Count down to zero
         }
+        DIE();
     }
 
 }
