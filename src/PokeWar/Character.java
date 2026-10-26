@@ -13,7 +13,7 @@ import java.util.Random;
 public abstract class Character {
     Random random = new Random();
 
-    protected String name,ID;
+    public String name,ID;
     public String explanation;
     protected double[] rechange,rechange_posibilities;
 
@@ -83,7 +83,7 @@ public abstract class Character {
     protected void health_change (double amount){
         this.current_hp = Math.clamp(this.current_hp + amount,0, MAX_HP);
         if (amount < 0){
-            this.damage_sustained -= amount; // We calculate total damage take this turn
+            this.damage_sustained += amount; // We calculate total damage take this turn
         }
     }
 
@@ -169,7 +169,11 @@ public abstract class Character {
         }
     }
 
-    public abstract void useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies);
+    public abstract boolean useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies);
+
+    public abstract int get_target (int skillIndex);
+
+    public abstract String getSkillName (int skillIndex);
 
     public abstract String infoAbility (int skillIndex);
 
@@ -178,9 +182,9 @@ public abstract class Character {
     public void guard (double expected_damage,boolean defend) { //todo Add Damage Type
         if (!defend){ // If Attack CAN'T defend (Real Damage / True Hit)
             System.out.printf("%s [%s] Guard  %c0 of This Attack (%.1f Damage Taken)\n",this.name,this.ID,'%',expected_damage);
-            this.health_change(expected_damage);
-            this.dodge_count++;
-            this.guard_count++;
+            this.health_change(-1 * expected_damage);
+            this.dodge_count = 0;
+            this.guard_count = 0;
             return;
         }
         double dodge_happen = random.nextDouble();
