@@ -12,7 +12,6 @@ import PokeWar.Character;
 import PokeWar.Position;
 
 public class Tank extends Character {
-    Position current_position;
     public Tank (String name,String ID){
         super(
                 name,ID,"GRUP DEFANS",Position.NONE,
@@ -82,7 +81,6 @@ public class Tank extends Character {
     @Override
     public boolean useAbility(int skillIndex, Character target, Character[] allies, Character[] enemies) {
         boolean done = false;
-        System.out.printf("%d useAbility",skillIndex);
         switch (skillIndex) {
             case 1 :
                 done = Skill_1(target,allies,enemies);

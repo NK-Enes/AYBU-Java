@@ -13,7 +13,6 @@ import PokeWar.Character;
 import PokeWar.Position;
 
 public class Archer extends Character {
-    public Position current_position;
     public Archer (String name,String ID){
         super(
                 name,ID,"YUKSEK DPS",Position.NONE,
