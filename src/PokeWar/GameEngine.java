@@ -171,12 +171,21 @@ public class GameEngine {
     public void Initiative_Show (){
         List<String> character_name = new ArrayList<>();
         List<String> character_side = new ArrayList<>();
+        List<Double> character_hp = new ArrayList<>();
+        List<Double> character_atk = new ArrayList<>();
         for (String id: this.initiative){
             Character character = this.id_to_character(id,false);
             character_name.add(character.name);
             character_side.add(character.ID.startsWith("A") ? player_1.get_team_name() : player_2.get_team_name());
+            character_hp.add(character.current_hp);
+            character_atk.add(character.current_atk);
         }
-        UIManager.print_instance_list(character_name.toArray(String[]::new),character_side.toArray(String[]::new));
+        UIManager.print_instance_list(
+                character_name.toArray(String[]::new),
+                character_side.toArray(String[]::new),
+                character_hp.stream().mapToDouble(Double::doubleValue).toArray(),
+                character_atk.stream().mapToDouble(Double::doubleValue).toArray()
+        );
     }
 
     public void TeamBuilder (){

@@ -36,10 +36,10 @@ public class UIManager {
         return name;
     }
 
-    public static void print_instance_list(String[] text,String[] side_list) {
+    public static void print_instance_list(String[] text,String[] side_list,double[] stathplist,double[] statatklist) {
         System.out.println("================================================================================");
         for (int i = 0; i < text.length; i++){
-            System.out.printf("%d - (%s) %s\n",i+1,side_list[i],text[i]);
+            System.out.printf("%d - (%s) %s \t[HP: %.0f | ATK: %.0f]\n",i+1,side_list[i],text[i],stathplist[i],statatklist[i]);
         }
 
         System.out.println("================================================================================\n\n");
