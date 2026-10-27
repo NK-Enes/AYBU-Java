@@ -19,7 +19,7 @@ public abstract class Character {
 
     protected double MAX_HP,MAX_DEF,MAX_ATK,SPEED;
     protected double current_hp,current_def,current_atk;
-    public Position current_position;
+    public Position current_position,heritage_position;
     protected double hit_change,dodge_change,guard_change;
 
     protected double damage_dealt,damage_sustained;
@@ -196,6 +196,7 @@ public abstract class Character {
 
     private void DIE (){
         if (this.current_hp <= 0){
+            this.heritage_position = this.current_position;
             this.current_position = Position.DEAD; // Move to Out of Battle
         }
     }

@@ -67,6 +67,11 @@ public class GameEngine {
         while (this.player_1.is_team_valid()[0] && this.player_2.is_team_valid()[0]){
             done = false;
             character = this.id_to_character("",true);
+            if (character.current_position.isIn(new Position[] {Position.DEAD})){
+                while (!done){
+                    done = UserCharacterChange(0, character); // Move to This unit's position
+                }
+            }
             while (!done && character.is_alive() && character.on_Area()){ // If action doesn't happen turn back to Action UI
                 character.Active_relists();
                 character.tick();
@@ -74,7 +79,7 @@ public class GameEngine {
 
                 int user_chose = input.nextInt();
                 if (user_chose == 0){
-                    done = UserCharacterChange(0, character);
+                    done = UserCharacterChange(1, character);  // Move to This unit's position (Also move this unit)
                 } else if (user_chose == 1) {
                     done = UserAttack(character);
                 } else if (user_chose == 2) {
@@ -179,7 +184,63 @@ public class GameEngine {
     }
 
     private boolean UserCharacterChange (int mod, Character character){
-        return false;
+        // 0: Just New Character Move 1: Both Character Move
+        // Slots Are Missing
+        List<Character> current_team = new ArrayList<>();
+        List<Character> depot_team = new ArrayList<>();
+        Character [] allies = switch (character.ID.charAt(0)){
+            case 'A' -> player_1.get_team_members();
+            case 'R' -> player_2.get_team_members();
+            default -> throw new IllegalStateException("Unexpected value: " + character.ID.indexOf(0));
+        };
+        for (Character ally: allies){
+            if (ally.on_Area()){
+                current_team.add(ally);
+            } else if (ally.is_alive()) {
+                depot_team.add(ally);
+            }
+        }
+
+        if (mod == 1){
+            UIManager.printCharacterSwapMenu(
+                    current_team.stream().toArray(Character[]::new),
+                    depot_team.stream().toArray(Character[]::new));
+            input.nextLine();
+            String user_input = input.nextLine().trim(); // Baştaki/sondaki boşlukları temizle
+            int move_arena = -1;
+            int move_depot = -1;
+
+            try {
+                // Girilen metni boşluk karakterine göre parçalara ayır
+                String[] parts = user_input.split("\\s+");
+
+                if (parts.length >= 2) {
+                    // String sayıları int'e çeviriyoruz (Kullanıcı 1 tabanlı girdiğinden index için 1 çıkarıyoruz)
+                    move_arena = Integer.parseInt(parts[0]) - 1;
+                    move_depot = Integer.parseInt(parts[1]) - 1;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Geçersiz format! Lütfen sayı girin (Örn: 1 2)");
+            }
+
+            Character Area_Character = current_team.get(move_arena);
+            Character Depot_Character = depot_team.get(move_depot);
+            UIManager.printSwapConfirmationScreen(Area_Character,Depot_Character,"");
+            int confirm = input.nextInt();
+            if (confirm == 0){return false; }
+            Depot_Character.position_change(Area_Character.current_position,false);
+            Area_Character.position_change(Position.NONE,false);
+        } else if (mod == 0) {
+            UIManager.printCharacterPlace(
+                    character,
+                    depot_team.stream().toArray(Character[]::new));
+            int user_input = input.nextInt();
+            UIManager.printSwapConfirmationScreen(character,depot_team.get(user_input), "DEAD");
+            int confirm = input.nextInt();
+            if (confirm == 0){return false; }
+            depot_team.get(user_input).position_change(character.heritage_position,false); // Move new character to area
+        }
+        return true;
     }
 
     public boolean Initiative_Show (){

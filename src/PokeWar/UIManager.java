@@ -213,4 +213,83 @@ public class UIManager {
 
         System.out.printf(template, character.infoAbility(skill_index), targetsBuilder.toString());
     }
+
+    public static void printCharacterSwapMenu(Character[] currentTeam, Character[] depotCharacters) {
+        // Step 1: Mevcut takım üyelerini dinamik olarak listeliyoruz
+        StringBuilder currentTeamBuilder = new StringBuilder();
+        for (int i = 0; i < currentTeam.length; i++) {
+            currentTeamBuilder.append(String.format("          (%d) %s%n", i + 1, currentTeam[i].toShortString()));
+        }
+
+        // Step 2: Depodaki / yedekteki karakterleri dinamik olarak listeliyoruz
+        StringBuilder depotBuilder = new StringBuilder();
+        for (int i = 0; i < depotCharacters.length; i++) {
+            depotBuilder.append(String.format("          (%d) %s%n", i + 1, depotCharacters[i].toShortString()));
+        }
+
+        // Step 3: Arayüz şablonunu hazırlayıp ekrana basıyoruz
+        String template = """
+        ================================================================================
+                              KARAKTER DEĞİŞİKLİĞİ (DEPO TAKAS EKRANI)
+        ================================================================================
+         [ MEVCUT TAKIM ÜYELERİ ]
+        %s--------------------------------------------------------------------------------
+         [ DEPODAKİ / YEDEKEYTEKİ KARAKTERLER ]
+        %s--------------------------------------------------------------------------------
+          (0) ⬅️ GERİ DÖN (Hamle Sıra Ekranına)
+        ================================================================================
+         Hangi takım üyesini depodaki hangi karakterle değiştirmek istiyorsun?
+         (Örn: "1 2" -> 1. sıradaki karakteri depodaki 2. karakterle değiştirir)
+        --------------------------------------------------------------------------------
+        > """;
+
+        System.out.printf(template, currentTeamBuilder.toString(), depotBuilder.toString());
+    }
+
+    public static void printCharacterPlace (Character character,Character[] depotCharacters) {
+        // Step 1: Depodaki / yedekteki karakterleri dinamik olarak listeliyoruz
+        StringBuilder depotBuilder = new StringBuilder();
+        for (int i = 0; i < depotCharacters.length; i++) {
+            depotBuilder.append(String.format("          (%d) %s%n", i + 1, depotCharacters[i].toShortString()));
+        }
+
+        // Step 3: Arayüz şablonunu hazırlayıp ekrana basıyoruz
+        String template = """
+        ================================================================================
+                              KARAKTER DEĞİŞİKLİĞİ (DEPO TAKAS EKRANI)
+        ================================================================================
+        %s [%s] [DEAD]
+        --------------------------------------------------------------------------------
+         [ DEPODAKİ / YEDEKEYTEKİ KARAKTERLER ]
+        %s--------------------------------------------------------------------------------
+          (0) ⬅️ GERİ DÖN (Hamle Sıra Ekranına)
+        ================================================================================
+         Depodaki hangi karakteri yerleştirmek istiyorsun?
+         (Örn: "1" -> 1. sıradaki karakteri ölen karakterin yerine yerleştirir.)
+        --------------------------------------------------------------------------------
+        > """;
+
+        System.out.printf(template,character.name,character.ID, depotBuilder.toString());
+    }
+
+    public static void printSwapConfirmationScreen(Character outgoingChar, Character incomingChar,String status) {
+        // Step 4: Değişiklik onay şablonunu hazırlayıp ekrana basıyoruz
+        String template = """
+        ================================================================================
+                              KARAKTER DEĞİŞİKLİĞİ - ONAY EKRANI
+        ================================================================================
+          Çıkarılacak Karakter : %s [%s] %s
+          Eklenecek Karakter   : %s [%s]
+        --------------------------------------------------------------------------------
+         Bu takas işlemini onaylıyor musun?
+          (1) EVET / ONAYLA
+          (0) İPTAL ET (Geri Dön)
+        ================================================================================
+        > """;
+
+        System.out.printf(template,
+                outgoingChar.name, outgoingChar.ID, status,
+                incomingChar.name, incomingChar.ID
+        );
+    }
 }
