@@ -15,6 +15,7 @@ import java.util.Scanner;
 import PokeWar.Roles.Archer;
 import PokeWar.Roles.Healer;
 import PokeWar.Roles.Tank;
+import PokeWar.Roles.Witch;
 
 public class GameEngine {
     Scanner input = new Scanner(System.in);
@@ -234,7 +235,7 @@ public class GameEngine {
             UIManager.printCharacterPlace(
                     character,
                     depot_team.stream().toArray(Character[]::new));
-            int user_input = input.nextInt();
+            int user_input = input.nextInt() - 1;
             UIManager.printSwapConfirmationScreen(character,depot_team.get(user_input), "DEAD");
             int confirm = input.nextInt();
             if (confirm == 0){return false; }
@@ -271,11 +272,15 @@ public class GameEngine {
         Character[] characters_A = new Character[] {
                 new Tank("Panzerkönig", "AT-1"),
                 new Archer("Scharfschütze","AA-1"),
-                new Healer("Heilmeister","AH-1")};
+                new Healer("Heilmeister","AH-1"),
+                new Witch("Isolde","AW-1"),
+        };
         Character[] characters_R = new Character[] {
                 new Tank("Bronenosets", "RT-1"),
                 new Archer("Sneznyj Bars", "RA-1"),
-                new Healer("Tselitel  ","RH-1")};
+                new Healer("Tselitel  ","RH-1"),
+                new Witch("Vasilisa","RW-1"),
+        };
 
         UIManager.printBanner("Pocket War");
         this.player_1 = new Team(UIManager.get_player_name(true), characters_A);
