@@ -1,6 +1,5 @@
 package Lessons.Zero_to_Hundered;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -35,6 +34,7 @@ public class basics {
          Sequence Import
          ++a vs a++ (Here the ++/-- positions matter) todo try
          */
+        a++;
 
         if (a == 10){
             System.out.print("A value is Equal 10\n");
@@ -47,7 +47,7 @@ public class basics {
         // Random Library
         Random random = new Random();
 
-        int d = random.nextInt(0,100); // between 0-100 (to,from)
+        int d = random.nextInt(0,100); // between 0-100 (from - to  )
         //System.out.println(d);
         double e = random.nextDouble(-1.0f,1.0f); // between (-1)-1
         //System.out.println(e);
@@ -56,7 +56,7 @@ public class basics {
         Math.PI, Math.E
         pow: x power of y (Math.pow(2,5) = 2^5)
         abs: absolute value of x (Math.abs(-52) = 52)
-        sqrt: square root (Math.sqrt(16) = √16) todo you can do this with Math.pow(16,(double)(1/2)) // because rooting is division power
+        sqrt: square root (Math.sqrt(16) = √16) todo you can do this with Math.pow(16,(double)(1/2)) " because rooting is division power "
         ceil: to minimum integer    (round up)
         floor: to maximum integer   (round down)
         max / min: between 2 int | double select as name (max/min)
@@ -64,6 +64,7 @@ public class basics {
 
         // printf (F-Strings) todo souf
         double f = -5100.222222;
+        // f: double / float | d: int / long /short | s: String | c: char | b: boolean
         //System.out.printf("%.2f\n",f); // 2 decimal
         //System.out.printf("%,.2f\n",f); // with commas
 
@@ -80,7 +81,7 @@ public class basics {
 
         int length = name.length();
         char first_letter = name.charAt(0);
-        int index = name.indexOf("e"); // first
+        int index = name.indexOf("el"); // first
         int last_index = name.lastIndexOf("e"); // last
         String upper_name = name.toUpperCase();
         String lower_name = name.toLowerCase();
